@@ -651,7 +651,6 @@ bool WifiConnect()
 		ClearLCD();
 		if(WifiDisconnectChoice)
 			WifiDisconnect();
-
 	}
 	else
 	{
@@ -659,7 +658,9 @@ bool WifiConnect()
 		LCDPrintString(TWO, CENTER_ALIGN, "Connettere tramite");
 		LCDPrintString(THREE, CENTER_ALIGN, "WPS?");
 		delay(DELAY_INFO_MSG);
+#ifdef WPS_CONNECTION
 		WpsChoice = CheckYesNo();
+#endif
 		if(WpsChoice)
 		{
 			ClearLCD();
@@ -673,6 +674,7 @@ bool WifiConnect()
 			LCDPrintString(THREE, CENTER_ALIGN, "la configurazione");
 			while(!WpsConfStart)
 			{
+				CheckEvents();
 				ButtonPress = CheckButtons();
 				switch (ButtonPress)
 				{
@@ -687,7 +689,9 @@ bool WifiConnect()
 				}
 				delay(WHILE_LOOP_DELAY);
 			}
+			ClearLCD();
 			WpsSuccess = WPSConnection();
+			CheckEvents();
 		}
 		else
 		{
@@ -1001,7 +1005,7 @@ bool WiFiInfo()
 		{
 			LCDPrintString(ONE, LEFT_ALIGN, "IP:");
 			LCDPrintString(TWO, LEFT_ALIGN, "SSID:");
-			LCDPrintString(TWO, RIGHT_ALIGN, MyNetworkList[WifiItemSsid].Ssid);
+			LCDPrintString(TWO, RIGHT_ALIGN, MyNetworkList[WifiItemSsid].WifiName);
 			LCDPrintString(THREE, LEFT_ALIGN, "Hostname:");
 			LCDPrintString(THREE, RIGHT_ALIGN, HostName);
 			LCDPrintString(ONE, RIGHT_ALIGN, WifiIP());

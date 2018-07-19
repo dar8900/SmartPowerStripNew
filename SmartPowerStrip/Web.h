@@ -2,6 +2,8 @@
 #define WEB_H
 #define REQ_BUF_SZ   60
 
+#undef WPS_CONNECTION 
+
 typedef enum
 {
 	NO_CONN = 0,
@@ -13,12 +15,20 @@ typedef enum
 	MAX_WIFI_ITEM
 }WIFI_LIST_ITEM;
 
+
 typedef struct
 {
-	String Ssid;
+	String WifiName;
 	const char* Password;
 	const char* RealSsid;
 }WIFI_LIST;
+
+typedef enum
+{
+	WPS = 0,
+	CABLATA,
+	MAX_WIFI_CONFIG
+}WIFI_CONFIG;
 
 extern const WIFI_LIST MyNetworkList[];
 
