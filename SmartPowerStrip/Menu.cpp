@@ -642,15 +642,30 @@ bool WifiConnect()
 	short ButtonPress = NO_PRESS;
 	if(Flag.WifiActive)
 	{
-		ClearLCD();
-		LCDPrintString(ONE, CENTER_ALIGN, "Sei ancora connesso");
-		LCDPrintString(TWO, CENTER_ALIGN, "ad una rete WiFi!");
-		LCDPrintString(THREE, CENTER_ALIGN, "Disconnettere?");
-		CheckEvents();
-		WifiDisconnectChoice = CheckYesNo();
-		ClearLCD();
-		if(WifiDisconnectChoice)
-			WifiDisconnect();
+		if(!Flag.WpsConfigSelected)
+			{
+			ClearLCD();
+			LCDPrintString(ONE, CENTER_ALIGN, "Sei ancora connesso");
+			LCDPrintString(TWO, CENTER_ALIGN, "ad una rete WiFi!");
+			LCDPrintString(THREE, CENTER_ALIGN, "Disconnettere?");
+			CheckEvents();
+			WifiDisconnectChoice = CheckYesNo();
+			ClearLCD();
+			if(WifiDisconnectChoice)
+				WifiDisconnect();
+		}
+		else
+		{
+			ClearLCD();
+			LCDPrintString(ONE, CENTER_ALIGN, "Sei ancora connesso");
+			LCDPrintString(TWO, CENTER_ALIGN, "ad una rete WiFi!");
+			LCDPrintString(THREE, CENTER_ALIGN, "Disconnettere?");
+			CheckEvents();
+			WifiDisconnectChoice = CheckYesNo();
+			ClearLCD();
+			if(WifiDisconnectChoice)
+				WifiTurnOff();			
+		}
 	}
 	else
 	{
@@ -663,46 +678,18 @@ bool WifiConnect()
 #endif
 		if(WpsChoice)
 		{
-			ClearLCD();
-			LCDPrintString(ONE, CENTER_ALIGN, "Premere il");
-			LCDPrintString(TWO, CENTER_ALIGN, "pulsante WPS");
-			LCDPrintString(THREE, CENTER_ALIGN, "sul router");
-			delay(DELAY_INFO_MSG);
-			ClearLCD();
-			LCDPrintString(ONE, CENTER_ALIGN, "Premere Ok");
-			LCDPrintString(TWO, CENTER_ALIGN, "per partire con");
-			LCDPrintString(THREE, CENTER_ALIGN, "la configurazione");
-			while(!WpsConfStart)
-			{
-				CheckEvents();
-				ButtonPress = CheckButtons();
-				switch (ButtonPress)
-				{
-					case BUTTON_UP:
-					case BUTTON_DOWN:
-					case BUTTON_LEFT:
-					default:
-						break;
-					case BUTTON_SET:
-						WpsConfStart = true;
-						break;
-				}
-				delay(WHILE_LOOP_DELAY);
-			}
-			ClearLCD();
 			WpsSuccess = WPSConnection();
 			CheckEvents();
-		}
-		else
-		{
-			WifiInit();
-		}
-		if(!WpsChoice)
-			WebServerInit();
-		else
-		{
 			if(WpsSuccess)
 				WebServerInit();
+		}
+		else
+		{
+			WifiWiredConnections();
+			if(Flag.WifiActive)
+			{
+				WebServerInit();
+			}
 		}
 	}
 	return true;

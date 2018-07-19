@@ -32,8 +32,10 @@ typedef enum
 
 extern const WIFI_LIST MyNetworkList[];
 
+void WifiConfInit(void);
 void WifiInit(void);
 bool WPSConnection(void);
+void WifiWiredConnections(void);
 void WifiDisconnect(void);
 void WifiTurnOff(void);
 String GetWifiSignalPower(void);

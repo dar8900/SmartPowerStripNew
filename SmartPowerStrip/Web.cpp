@@ -78,12 +78,14 @@ void WifiConfInit()
 						WifiConfigItem--;
 					else
 						WifiConfigItem = MAX_WIFI_CONFIG - 1;
+					ClearLCDLine(THREE);
 					break;
 				case BUTTON_DOWN:
 					if(WifiConfigItem < MAX_WIFI_CONFIG - 1)
 						WifiConfigItem++;
 					else
 						WifiConfigItem = WPS;
+					ClearLCDLine(THREE);
 					break;
 				case BUTTON_LEFT:
 					break;
@@ -116,6 +118,165 @@ void WifiConfInit()
 
 
 void WifiInit()
+{
+	if(Flag.WpsConfigSelected)
+		WPSConnection();
+	else
+		WifiWiredConnections();
+	return;
+}
+
+static void AssignSsid()
+{
+	short ButtonPress = NO_PRESS;
+	short WifiListItem = DARIO_CELL;
+	bool ExitAssignSsid = false;
+	ClearLCD();
+	while(!ExitAssignSsid)
+	{
+		TakePresentTime();
+		TakeReleTime();
+		LCDPrintString(ONE, CENTER_ALIGN, "Assegna il nome");
+		LCDPrintString(TWO, CENTER_ALIGN, "alla nuova rete");
+		LCDPrintString(THREE, CENTER_ALIGN, NetworkName[WifiListItem]);
+		ButtonPress = CheckButtons();
+		switch(ButtonPress)
+		{
+			case BUTTON_UP:
+				if(WifiListItem > 0)
+					WifiListItem--;
+				else
+					WifiListItem = MAX_NETWORK_NAME;
+				ClearLCDLine(THREE);
+				break;
+			case BUTTON_DOWN:
+				if(WifiListItem < MAX_NETWORK_NAME)
+					WifiListItem++;
+				else
+					WifiListItem = 0;
+				ClearLCDLine(THREE);
+				break;
+			case BUTTON_LEFT:
+				break;
+			case BUTTON_SET:
+				ClearLCD();
+				LCDPrintString(TWO, CENTER_ALIGN, "Settato");
+				WriteMemory(WIFI_SSID_ADDR, WifiListItem);
+				// MyNetworkList[WifiListItem].RealSsid = WiFi.SSID().c_str();
+				delay(DELAY_INFO_MSG);
+				ClearLCD();
+				ExitAssignSsid = true;
+				break;
+			default:
+				break;
+		}
+		delay(WHILE_LOOP_DELAY);
+	}
+	
+}
+
+
+bool WPSConnection()
+{
+	bool WpsSuccess = false, FindSsid = false, WpsConfStart = false, ExitWpsChoiceConf = false;
+	short NumbPoint = 0;
+	short WifiListItem = NO_CONN;
+	short ButtonPress = NO_PRESS;
+	ClearLCD();
+	LCDPrintString(ONE, CENTER_ALIGN, "Premere il");
+	LCDPrintString(TWO, CENTER_ALIGN, "pulsante WPS");
+	LCDPrintString(THREE, CENTER_ALIGN, "sul router");
+	delay(DELAY_INFO_MSG);
+	ClearLCD();
+	LCDPrintString(ONE, CENTER_ALIGN, "Premere Ok");
+	LCDPrintString(TWO, CENTER_ALIGN, "per partire con");
+	LCDPrintString(THREE, CENTER_ALIGN, "la configurazione");
+	while(!ExitWpsChoiceConf)
+	{
+		TakePresentTime();
+		TakeReleTime();
+		ButtonPress = CheckButtons();
+		switch (ButtonPress)
+		{
+			case BUTTON_UP:
+			case BUTTON_DOWN:
+			default:
+				break;
+			case BUTTON_SET:
+				WpsConfStart = true;
+				ExitWpsChoiceConf = true;
+				break;
+			case BUTTON_LEFT:
+				WpsConfStart = false;
+				ExitWpsChoiceConf = true;
+				break;
+		}
+		delay(WHILE_LOOP_DELAY);
+	}
+	if(WpsConfStart)
+	{
+		ClearLCD();
+		WiFi.mode(WIFI_STA);
+		WpsSuccess = WiFi.beginWPSConfig();
+		delay(3000);
+		ClearLCD();
+		if(WiFi.SSID().length() > 0 && WpsSuccess)
+		{
+			while (WiFi.status() != WL_CONNECTED)
+			{
+				TakePresentTime();
+				TakeReleTime();
+				delay(500);
+				if(NumbPoint > 19)
+				{
+					NumbPoint = 0;
+					ClearLCDLine(2);
+				}
+				LCDPrintString(THREE, 0 + NumbPoint, ".");
+				NumbPoint++;
+			}
+			Flag.WifiActive = true;
+			LCDShowPopUp("Connesso");
+			LCDPrintString(TWO, LEFT_ALIGN, "IP:");
+			LCDPrintString(TWO, RIGHT_ALIGN, WifiIP());
+			for(WifiListItem = DARIO_CELL; WifiListItem < MAX_WIFI_ITEM; WifiListItem++)
+			{
+				if(String(MyNetworkList[WifiListItem].RealSsid) == WiFi.SSID())
+				{
+					FindSsid = true;
+					break;
+				}
+			}
+			LCDPrintString(THREE, CENTER_ALIGN, "SSID:");
+			if(FindSsid)
+			{
+				LCDPrintString(FOUR, CENTER_ALIGN, MyNetworkList[WifiListItem].WifiName);
+				delay(DELAY_INFO_MSG);
+			}
+			else
+			{
+				LCDPrintString(FOUR, CENTER_ALIGN, "Sconosciuto");
+				delay(DELAY_INFO_MSG);
+				AssignSsid();
+			}
+			ClearLCD();
+			Flag.WpsConfigSelected = true;
+		}
+		else
+		{
+			LCDPrintString(ONE, CENTER_ALIGN, "Configurazione WPS");
+			LCDPrintString(TWO, CENTER_ALIGN, "fallita");
+			delay(DELAY_INFO_MSG);
+			Flag.WifiActive = false;
+			WpsSuccess = false;
+			Flag.WpsConfigSelected = false;
+			ClearLCD();
+		}
+	}
+	return WpsSuccess;
+}
+
+void WifiWiredConnections()
 {
 	short NumbPoint = 0;
 	short TimerNoConnection = 0;
@@ -268,124 +429,8 @@ void WifiInit()
 			WifiTurnOff();
 		}
 	}
-	return;
 }
 
-static void AssignSsid()
-{
-	short ButtonPress = NO_PRESS;
-	short WifiListItem = DARIO_CELL;
-	bool ExitAssignSsid = false;
-	ClearLCD();
-	while(!ExitAssignSsid)
-	{
-		TakePresentTime();
-		TakeReleTime();
-		LCDPrintString(ONE, CENTER_ALIGN, "Assegna il nome");
-		LCDPrintString(TWO, CENTER_ALIGN, "alla nuova rete");
-		LCDPrintString(THREE, CENTER_ALIGN, NetworkName[WifiListItem]);
-		ButtonPress = CheckButtons();
-		switch(ButtonPress)
-		{
-			case BUTTON_UP:
-				if(WifiListItem > 0)
-					WifiListItem--;
-				else
-					WifiListItem = MAX_NETWORK_NAME;
-				ClearLCDLine(THREE);
-				break;
-			case BUTTON_DOWN:
-				if(WifiListItem < MAX_NETWORK_NAME)
-					WifiListItem++;
-				else
-					WifiListItem = 0;
-				ClearLCDLine(THREE);
-				break;
-			case BUTTON_LEFT:
-				break;
-			case BUTTON_SET:
-				ClearLCD();
-				LCDPrintString(TWO, CENTER_ALIGN, "Settato");
-				WriteMemory(WIFI_WPS_NAME_ADDR, WifiListItem);
-				// MyNetworkList[WifiListItem].RealSsid = WiFi.SSID().c_str();
-				delay(DELAY_INFO_MSG);
-				ClearLCD();
-				ExitAssignSsid = true;
-				break;
-			default:
-				break;
-		}
-		delay(WHILE_LOOP_DELAY);
-	}
-	
-}
-
-
-bool WPSConnection()
-{
-	bool WpsSuccess = false, FindSsid = false;
-	short NumbPoint = 0;
-	short WifiListItem = NO_CONN;
-	WiFi.mode(WIFI_STA);
-	WpsSuccess = WiFi.beginWPSConfig();
-	delay(3000);
-	ClearLCD();
-	if(WiFi.SSID().lenght() > 0)
-	{
-		if(WpsSuccess)
-		{
-			while (WiFi.status() != WL_CONNECTED)
-			{
-				TakePresentTime();
-				TakeReleTime();
-				delay(500);
-				if(NumbPoint > 19)
-				{
-					NumbPoint = 0;
-					ClearLCDLine(2);
-				}
-				LCDPrintString(THREE, 0 + NumbPoint, ".");
-				NumbPoint++;
-			}
-			Flag.WifiActive = true;
-			LCDShowPopUp("Connesso");
-			LCDPrintString(TWO, LEFT_ALIGN, "IP:");
-			LCDPrintString(TWO, RIGHT_ALIGN, WifiIP());
-			for(WifiListItem = DARIO_CELL; WifiListItem < MAX_WIFI_ITEM; WifiListItem++)
-			{
-				if(String(MyNetworkList[WifiListItem].RealSsid) == WiFi.SSID())
-				{
-					FindSsid = true;
-					break;
-				}
-			}
-			LCDPrintString(THREE, CENTER_ALIGN, "SSID:");
-			if(FindSsid)
-			{
-				LCDPrintString(FOUR, CENTER_ALIGN, MyNetworkList[WifiListItem].WifiName);
-				delay(DELAY_INFO_MSG);
-			}
-			else
-			{
-				LCDPrintString(FOUR, CENTER_ALIGN, "Sconosciuto");
-				delay(DELAY_INFO_MSG);
-				AssignSsid();
-			}
-			ClearLCD();
-		}
-		else
-		{
-			LCDPrintString(ONE, CENTER_ALIGN, "Configurazione WPS");
-			LCDPrintString(TWO, CENTER_ALIGN, "fallita");
-			delay(DELAY_INFO_MSG);
-			Flag.WifiActive = false;
-			ClearLCD();
-		}
-	}
-	else
-		WpsSuccess = false;
-	return WpsSuccess;
-}
 
 String GetWifiSignalPower()
 {

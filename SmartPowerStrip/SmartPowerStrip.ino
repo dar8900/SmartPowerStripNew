@@ -95,7 +95,7 @@ FLAGS Flag;
 short EnterSetup;
 
 String VersionValue = "1.9";
-String VersionDate = "17/07/18";
+String VersionDate  = "17/07/18";
 
 void BlinkLed(short pin)
 {
@@ -114,7 +114,7 @@ void CheckEvents()
 	TakePresentTime();
 	TakeReleTime();
 	WebClient();
-	if(Flag.WifiActive)
+	if(Flag.WifiActive && !Flag.WpsConfigSelected)
 		WifiScanForSignal();
 }
 
@@ -163,6 +163,7 @@ void setup()
 	EepromInit();
 	LCDInit();
 	RTCInit();
+	WifiConfInit();
 	WifiInit();
 	if(Flag.WifiActive)
 	{
