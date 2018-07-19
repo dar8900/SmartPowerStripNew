@@ -32,10 +32,10 @@ const WIFI_LIST MyNetworkList[] =
 {
 	{"No Conn."     , "password"							, "NoConn" 					},
 	{"Dario Cell"	, "dari9299"							, "DEO DOOM"				},
-	{"Wifi Nonna"	, "robbylinodario196219611989"			, "TIM-89557989_EXT_NONN"   },
+	{"Wifi Nonna"	, "3lz2HgMJciM4Zkw73EzqMD1h"			, "TIM-19727043_RPT_NONNA"   },
 	{"Camera mia"	, "dariolinorobby198919611962"			, "WIFI-56878495"			},
-	{"Salotto Casa"	, "robbylinodario196219611989"			, "TIM-90914475"			},
-	{"Camera Grande", "robbylinodario196219611989"			, "TIM-90914475_RPT"		},
+	{"Salotto Casa"	, "3lz2HgMJciM4Zkw73EzqMD1h"			, "TIM-19727043"			},
+	{"Camera Grande", "3lz2HgMJciM4Zkw73EzqMD1h"			, "TIM-19727043_RPT"		},
 };
 
 
@@ -61,57 +61,55 @@ void WifiConfInit()
 	short ButtonPress = NO_PRESS;
 	short WifiConfigItem = WPS;
 	bool ExitWifiConfInit = false;
-	ReadMemory(WIFI_WPS_CONF_ADDR, 1, &WifiConfigItem);
-	if(WifiConfigItem != WPS && WifiConfigItem != CABLATA)
+	ClearLCD();
+	LCDPrintString(ONE, CENTER_ALIGN, "Quale configurazione");
+	LCDPrintString(TWO, CENTER_ALIGN, "WiFi usare?");
+	while(!ExitWifiConfInit)
 	{
-		ClearLCD();
-		LCDPrintString(ONE, CENTER_ALIGN, "Quale configurazione");
-		LCDPrintString(TWO, CENTER_ALIGN, "WiFi usare?");
-		while(!ExitWifiConfInit)
+		LCDPrintString(THREE, CENTER_ALIGN, WifiConfigName[WifiConfigItem]);
+		ButtonPress = CheckButtons();
+		switch(ButtonPress)
 		{
-			LCDPrintString(THREE, CENTER_ALIGN, WifiConfigName[WifiConfigItem]);
-			ButtonPress = CheckButtons();
-			switch(ButtonPress)
-			{
-				case BUTTON_UP:
-					if(WifiConfigItem > WPS)
-						WifiConfigItem--;
-					else
-						WifiConfigItem = MAX_WIFI_CONFIG - 1;
-					ClearLCDLine(THREE);
-					break;
-				case BUTTON_DOWN:
-					if(WifiConfigItem < MAX_WIFI_CONFIG - 1)
-						WifiConfigItem++;
-					else
-						WifiConfigItem = WPS;
-					ClearLCDLine(THREE);
-					break;
-				case BUTTON_LEFT:
-					break;
-				case BUTTON_SET:
-					if(WifiConfigItem == WPS)
-					{
-						Flag.WpsConfigSelected = true;
-						EepromUpdate(WIFI_WPS_CONF_ADDR, WPS);
-						ClearLCD();
-						LCDPrintString(TWO, CENTER_ALIGN, "WPS settato");
-						delay(DELAY_INFO_MSG);
-						ClearLCDLine(TWO);
-					}
-					else
-					{
-						Flag.WpsConfigSelected = false;
-						EepromUpdate(WIFI_WPS_CONF_ADDR, CABLATA);
-						ClearLCD();
-						LCDPrintString(TWO, CENTER_ALIGN, "Cablato settato");
-						delay(DELAY_INFO_MSG);
-						ClearLCDLine(TWO);
-					}
-					break;
-			}
-			delay(WHILE_LOOP_DELAY);
+			case BUTTON_UP:
+				if(WifiConfigItem > WPS)
+					WifiConfigItem--;
+				else
+					WifiConfigItem = MAX_WIFI_CONFIG - 1;
+				ClearLCDLine(THREE);
+				break;
+			case BUTTON_DOWN:
+				if(WifiConfigItem < MAX_WIFI_CONFIG - 1)
+					WifiConfigItem++;
+				else
+					WifiConfigItem = WPS;
+				ClearLCDLine(THREE);
+				break;
+			case BUTTON_LEFT:
+				break;
+			case BUTTON_SET:
+				if(WifiConfigItem == WPS)
+				{
+					Flag.WpsConfigSelected = true;
+					EepromUpdate(WIFI_WPS_CONF_ADDR, WPS);
+					ClearLCD();
+					LCDPrintString(TWO, CENTER_ALIGN, "WPS settato");
+					delay(DELAY_INFO_MSG);
+					ClearLCDLine(TWO);
+					ExitWifiConfInit = true;
+				}
+				else
+				{
+					Flag.WpsConfigSelected = false;
+					EepromUpdate(WIFI_WPS_CONF_ADDR, CABLATA);
+					ClearLCD();
+					LCDPrintString(TWO, CENTER_ALIGN, "Cablato settato");
+					delay(DELAY_INFO_MSG);
+					ClearLCDLine(TWO);
+					ExitWifiConfInit = true;
+				}
+				break;
 		}
+		delay(WHILE_LOOP_DELAY);
 	}
 }
 
