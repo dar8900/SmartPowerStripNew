@@ -264,6 +264,7 @@ bool WPSConnection()
 		}
 		else
 		{
+			ClearLCD();
 			LCDPrintString(ONE, CENTER_ALIGN, "Configurazione WPS");
 			LCDPrintString(TWO, CENTER_ALIGN, "fallita");
 			delay(DELAY_INFO_MSG);
@@ -272,6 +273,17 @@ bool WPSConnection()
 			Flag.WpsConfigSelected = false;
 			ClearLCD();
 		}
+	}
+	else
+	{
+		ClearLCD();
+		LCDPrintString(ONE, CENTER_ALIGN, "Configurazione WPS");
+		LCDPrintString(TWO, CENTER_ALIGN, "annullata");
+		delay(DELAY_INFO_MSG);
+		Flag.WifiActive = false;
+		WpsSuccess = false;
+		Flag.WpsConfigSelected = false;
+		ClearLCD();
 	}
 	return WpsSuccess;
 }
