@@ -55,38 +55,61 @@ const String WifiConfigName[]
 	"Cablata"	,
 };
 
-WpsConfigSelected
 
 void WifiConfInit()
 {
 	short ButtonPress = NO_PRESS;
 	short WifiConfigItem = WPS;
 	bool ExitWifiConfInit = false;
-	ClearLCD();
-	LCDPrintString(ONE, CENTER_ALIGN, "Quale configurazione");
-	LCDPrintString(TWO, CENTER_ALIGN, "WiFi usare?");
-	while(!ExitWifiConfInit)
+	ReadMemory(WIFI_WPS_CONF_ADDR, 1, &WifiConfigItem);
+	if(WifiConfigItem != WPS && WifiConfigItem != CABLATA)
 	{
-		LCDPrintString(THREE, CENTER_ALIGN, WifiConfigName[WifiConfigItem]);
-		ButtonPress = CheckButtons();
-		switch(ButtonPress)
+		ClearLCD();
+		LCDPrintString(ONE, CENTER_ALIGN, "Quale configurazione");
+		LCDPrintString(TWO, CENTER_ALIGN, "WiFi usare?");
+		while(!ExitWifiConfInit)
 		{
-			case BUTTON_UP:
-				if(WifiConfigItem > WPS)
-					WifiConfigItem--;
-				else
-					WifiConfigItem = MAX_WIFI_CONFIG - 1;
-				break;
-			case BUTTON_DOWN:
-				if(WifiConfigItem < MAX_WIFI_CONFIG - 1)
-					WifiConfigItem++;
-				else
-					WifiConfigItem = WPS;
-				break;
-			case BUTTON_LEFT:
-				break;
+			LCDPrintString(THREE, CENTER_ALIGN, WifiConfigName[WifiConfigItem]);
+			ButtonPress = CheckButtons();
+			switch(ButtonPress)
+			{
+				case BUTTON_UP:
+					if(WifiConfigItem > WPS)
+						WifiConfigItem--;
+					else
+						WifiConfigItem = MAX_WIFI_CONFIG - 1;
+					break;
+				case BUTTON_DOWN:
+					if(WifiConfigItem < MAX_WIFI_CONFIG - 1)
+						WifiConfigItem++;
+					else
+						WifiConfigItem = WPS;
+					break;
+				case BUTTON_LEFT:
+					break;
+				case BUTTON_SET:
+					if(WifiConfigItem == WPS)
+					{
+						Flag.WpsConfigSelected = true;
+						EepromUpdate(WIFI_WPS_CONF_ADDR, WPS);
+						ClearLCD();
+						LCDPrintString(TWO, CENTER_ALIGN, "WPS settato");
+						delay(DELAY_INFO_MSG);
+						ClearLCDLine(TWO);
+					}
+					else
+					{
+						Flag.WpsConfigSelected = false;
+						EepromUpdate(WIFI_WPS_CONF_ADDR, CABLATA);
+						ClearLCD();
+						LCDPrintString(TWO, CENTER_ALIGN, "Cablato settato");
+						delay(DELAY_INFO_MSG);
+						ClearLCDLine(TWO);
+					}
+					break;
+			}
+			delay(WHILE_LOOP_DELAY);
 		}
-		delay(WHILE_LOOP_DELAY);
 	}
 }
 

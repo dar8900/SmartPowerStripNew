@@ -155,7 +155,8 @@ bool IsMemoryEmpty()
 
 void EepromUpdate(short address, short value)
 {
-	if(EEPROM.read(address) != value)
+	short ValueRead = EEPROM.read(address);
+	if(ValueRead != value)
 	{
 		EEPROM.write(address, value);
 	}
