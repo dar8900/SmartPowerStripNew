@@ -64,7 +64,7 @@ void LcdTimeWrite(int Time2Write)
 // Utilizzano un oggetto di tipo LCD
 void LCDPrintString(short row, short col, String string)
 {
-  if(row > MAX_LCD_ROW || string.length() > 20)
+  if(row > MAX_LCD_ROW || string.length() > 20 )
   {
 	lcd_main.clear();
 	if(string.length() > 20)
@@ -76,9 +76,8 @@ void LCDPrintString(short row, short col, String string)
 	{
 		col = CENTER_ALIGN;
 		row = 3;
-		string = "OVER DIMENSION";
+		string = "OVER DIMENSION";		
 	}
-
   }
   switch(col)
   {
@@ -92,7 +91,6 @@ void LCDPrintString(short row, short col, String string)
       col = 0;
       break;
     default:
-      lcd_main.home();
       break;
   }
   lcd_main.setCursor(col, row);

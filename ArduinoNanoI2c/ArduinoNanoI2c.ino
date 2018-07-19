@@ -5,10 +5,12 @@
 
 
 short ButtonPress = NO_PRESS;
-short TickSecond;
+short TickSecond = 0;
+short WichData = NO_DATA;
+// uint32_t TimeExec;
 
-String ButtonStr;
 extern String		EnergyStr;
+extern String		CurrentStr;
 
 static bool ChekButtons()
 {
@@ -37,20 +39,35 @@ static bool ChekButtons()
 		ButtonPress = BUTTON_SET;
 		Press = true;
 	}
-	else
-	{
-		ButtonPress = NO_PRESS;
-		Press = false;
-	}
-	ButtonStr = String(ButtonPress);
 	return Press;
+}
+
+static void WichInfo()
+{
+	while(Wire.available())
+	{
+   		WichData = Wire.read();
+	}
 }
 
 static void SendInfo()
 {
-	String InfoStr = ButtonStr + " " + EnergyStr;
-	Wire.write(InfoStr.c_str());
-	ButtonPress = NO_PRESS;
+	switch(WichData)
+	{
+		case BUTTON:
+			Wire.write(ButtonPress);
+			ButtonPress = NO_PRESS;
+			break;
+		case ENERGY:
+			Wire.write(EnergyStr.c_str());
+			break;
+		case CURRENT:
+			Wire.write(CurrentStr.c_str());
+			break;
+		default:
+			break;
+	}
+	WichData = NO_DATA;
 }
 
 static void BlinkLed(short pin)
@@ -62,12 +79,14 @@ static void BlinkLed(short pin)
 
 void setup() 
 {
+	Serial.begin(9600);
 	Wire.begin(ARDUINO_ADDR); 
 	pinMode(UP, INPUT);
 	pinMode(DOWN, INPUT);
 	pinMode(LEFT, INPUT);
 	pinMode(SET, INPUT);
 	pinMode(BUTTON_LED, OUTPUT);
+	Wire.onReceive(WichInfo);
 	Wire.onRequest(SendInfo);
 }
 
@@ -76,9 +95,10 @@ void loop()
 	ChekButtons();
 	CalcEnergy();
 	TickSecond++;
-	if(TickSecond == SECOND_TICK)
+	if(TickSecond == (1000 / MAIN_DELAY))
 	{
 		TickSecond = 0;
-		EnergyValueSec();
-	}
+		EnergyValueSec();	
+	}	
+	
 }

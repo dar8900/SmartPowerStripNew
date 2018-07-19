@@ -1,3 +1,5 @@
+#ifndef TIME_LIB_H
+#define TIME_LIB_H
 #define SEC_IN_DAY		   86400
 #define SEC_IN_HOUR 		3600
 #define SEC_IN_MINUTE 	      60
@@ -38,3 +40,4 @@ bool ChangeTime(void);
 void TimeAdjust(short Hour, short Minute, short Day, short Month, short Year);
 void ShowDateTime(short Row);
 void TakePresentTime(void);
+#endif

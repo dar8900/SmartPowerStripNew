@@ -8,6 +8,8 @@
 #include "Band.h"
 #include "Rele.h"
 
+#define  TIMER_REFRESH_MEASURE	30
+
 extern TIME_DATE_FORMAT PresentTime;
 extern BAND_FORMAT Band;
 extern RELE Rele[];
@@ -15,6 +17,7 @@ extern FLAGS Flag;
 extern String HostName;
 extern String VersionValue;
 extern String VersionDate;
+
 uint16_t TimerRefreshMenu;
 short TimerClientConnected = DELAY_CLIENT_CONNECTION;
 bool ExitFromBand = true;
@@ -25,6 +28,7 @@ const MENU_VOICES MainMenuItems[]
 	{ChangeTimeBand	,	"Cambio Banda"		},
 	{WifiConnect	,	"Connetti WiFi"		},
 	{HelpInfo		,	"Help e Info"		},
+	{ShowMeasures	,	"Misure"   		    },
 	{WiFiInfo		,	"Wifi Info"			},
 	{AssignReleTimer,	"Assegna Timer"		},
 	{Setup       	,	"Impostazioni"    	},
@@ -35,6 +39,7 @@ const MENU_VOICES GeneralSetup[]
 	{ChangeTime			, "Cambio ora"      },
 	{ChangeTimerDisplay , "Timer display on"},
 	{TurnOffWifi        , "Spegni Wifi"     },
+	{ChangeUdmEnergy    , "UDM Energia"     },
 };
 
 // WiFi.mode(WIFI_OFF);
@@ -49,11 +54,53 @@ const DELAY_TIMER_S TimerDalays[]
 	{166,  "10 sec"},
 };
 
+const UDM_ENERGY_MENU UdmEnergyScale[MAX_UDM_ITEM] = 
+{
+	{3600.0,    "Wh" },
+	{60.0  ,   "Wm" },
+	{1.0  , "Ws" },	
+};
+
+const FORMAT_ENERGY TabFormat[] = 
+{
+	{0.001,             1000.0, "m"},
+	{0.01,              1000.0, "m"},
+	{0.1,               1000.0, "m"},	
+	{1.0,                    1,  ""},
+	{10.0,                   1,  ""},
+	{100.0,                  1,  ""},
+	{1000.0,             0.001, "k"},
+	{10000.0,            0.001, "k"},
+	{100000.0,           0.001, "k"},
+	{1000000.0,       0.000001, "M"},
+	{10000000.0,      0.000001, "M"},
+	{100000000.0,     0.000001, "M"},
+	{1000000000.0, 0.000000001, "G"},
+};
+
+
 static const String ONOFF[] = {"Off", "On"};
+
+static uint8_t SearchFormatRange(float ValueToFormat)
+{
+	uint8_t TabLenght = 13;
+	uint8_t Range = 0;
+	for(Range = 0; Range < TabLenght; Range++)
+	{
+		if(Range == TabLenght - 1)
+			break;
+		if(ValueToFormat > TabFormat[Range].RangeValue && ValueToFormat < TabFormat[Range + 1].RangeValue)
+		{
+			break;
+		}
+	}
+	return Range;
+}
 
 void MenuInit()
 {
 	short Delay = MAIN_SCREEN_TIMER_DEFAULT;
+	short EnergyUdm;
 	ReadMemory(TIMER_BACKLIGHT_ADDR, 1, &Delay);
 	if(Delay > MAX_DELAY_TIMERS)
 	{
@@ -66,6 +113,7 @@ void MenuInit()
 		TimerRefreshMenu = TimerDalays[Delay].DelayValue;
 	}
 	ClearLCD();
+	EepromUpdate(UDM_ENERGY_ADDR, WATT_ORA);
 	LCDPrintString(ONE, CENTER_ALIGN, "Retroilluminazione");
 	LCDPrintString(TWO, CENTER_ALIGN, "impostata a:");
 	LCDPrintString(THREE, CENTER_ALIGN, TimerDalays[Delay].DelayStr);
@@ -247,7 +295,7 @@ void MainMenu()
 				{
 					Item = MAX_MENU_ITEM - 1;
 				}
-				ClearLCD();
+				ClearLCDLine(THREE);
 				break;
 			case BUTTON_DOWN:
 				BlinkLed(BUTTON_LED);
@@ -259,7 +307,7 @@ void MainMenu()
 				{
 					Item = MANUAL_RELE;
 				}
-				ClearLCD();
+				ClearLCDLine(THREE);
 				break;
 			case BUTTON_SET:
 				BlinkLed(BUTTON_LED);
@@ -289,6 +337,7 @@ bool Setup()
 	ClearLCD();
 	while(!ExitSetup)
 	{
+		CheckEvents();
 		ShowDateTime(ONE);
 		if(Flag.ClientConnected)
 		{
@@ -783,6 +832,109 @@ bool HelpInfo()
 	return true;
 }
 
+bool ShowMeasures()
+{
+	uint16_t TimerDisplay = 3000; // 60s con delay 10ms
+	uint8_t FormatRange = 0;
+	short TimerRefreshMeasure = TIMER_REFRESH_MEASURE; 
+	short ButtonPress = NO_PRESS;
+	short UdmEnergy = 0;
+	String EnergyStr;
+	String CurrentStr;
+	float EnergyScaled = 0.0;
+	float CurrentScaled = 0.0;
+	bool ExitShowEnergy = false, FormatEnergy = false;
+	ReadMemory(UDM_ENERGY_ADDR, 1, &UdmEnergy);
+	ClearLCD();
+	if(!Flag.IsDisplayOn)
+	{
+		LCDDisplayOn();
+		Flag.IsDisplayOn = true;
+	}
+	while(!ExitShowEnergy)
+	{
+		LCDPrintString(ONE, CENTER_ALIGN, "Corrente Misurata:");
+		LCDPrintString(THREE, CENTER_ALIGN, "Energia Misurata:");
+		if(TimerRefreshMeasure == TIMER_REFRESH_MEASURE)
+		{
+			ClearLCDLine(TWO);
+			ClearLCDLine(FOUR);
+			CurrentStr = CurrentValueStr();
+			EnergyStr = EnergyValueStr();
+			CurrentScaled = CurrentStr.toFloat();
+			FormatRange = SearchFormatRange(CurrentScaled);
+			CurrentScaled *= TabFormat[FormatRange].FormatFactor;
+			CurrentStr = String(CurrentScaled);
+			CurrentStr += " " + TabFormat[FormatRange].Prefix + "A";
+			switch(UdmEnergy)
+			{
+				case WATT_MINUTO:
+					EnergyScaled = ((EnergyStr.toFloat()) / UdmEnergyScale[UdmEnergy].UdmValue);
+					FormatRange = SearchFormatRange(EnergyScaled);
+					EnergyScaled *= TabFormat[FormatRange].FormatFactor;
+					EnergyStr = String(EnergyScaled);
+					break;
+				case WATT_SECONDO:
+					EnergyScaled = ((EnergyStr.toFloat()) / UdmEnergyScale[UdmEnergy].UdmValue);
+					FormatRange = SearchFormatRange(EnergyScaled);
+					EnergyScaled *= TabFormat[FormatRange].FormatFactor;
+					EnergyStr = String(EnergyScaled);
+					break;
+				case WATT_ORA:
+					EnergyScaled = ((EnergyStr.toFloat()) / UdmEnergyScale[UdmEnergy].UdmValue);
+					FormatRange = SearchFormatRange(EnergyScaled);
+					EnergyScaled *= TabFormat[FormatRange].FormatFactor;
+					EnergyStr = String(EnergyScaled);
+					break;
+				default:
+					break;
+			}
+			EnergyStr +=  " " + TabFormat[FormatRange].Prefix + UdmEnergyScale[UdmEnergy].UdmStr;
+			LCDPrintString(TWO, CENTER_ALIGN, CurrentStr);
+			LCDPrintString(FOUR, CENTER_ALIGN, EnergyStr);
+		}
+		ButtonPress = CheckButtons();
+		switch(ButtonPress)
+		{
+			case BUTTON_UP:
+			case BUTTON_DOWN:
+			case BUTTON_SET:
+				BlinkLed(BUTTON_LED);
+				TimerDisplay = 3000;
+				if(!Flag.IsDisplayOn)
+				{
+					LCDDisplayOn();
+					Flag.IsDisplayOn = true;
+				}
+				break;
+			case BUTTON_LEFT:
+				BlinkLed(BUTTON_LED);
+				ExitShowEnergy = true;
+				if(!Flag.IsDisplayOn)
+				{
+					TimerDisplay = 3000;
+					LCDDisplayOn();
+					Flag.IsDisplayOn = true;
+				}
+				break;
+		}
+		if(TimerDisplay > 0)
+			TimerDisplay--;
+		if(TimerDisplay == 0 && Flag.IsDisplayOn)
+		{
+			LCDDisplayOff();
+			Flag.IsDisplayOn = false;
+		}
+		TimerRefreshMeasure--;
+		if(TimerRefreshMeasure == 0)
+		{
+			TimerRefreshMeasure = TIMER_REFRESH_MEASURE;
+		}
+		delay(10);
+	}
+	return true;
+}
+
 bool WiFiInfo()
 {
 	bool ExitWifiInfo = false;
@@ -1041,6 +1193,69 @@ bool TurnOffWifi()
 		WifiTurnOff();
 	}
 	return true;
+}
+
+bool ChangeUdmEnergy()
+{
+	bool ExitChangeUdm = false;
+	short ButtonPress = NO_PRESS;
+	short UdmEnergyItem, OldUdmEnergyItem;
+	ReadMemory(UDM_ENERGY_ADDR, 1, &UdmEnergyItem);
+	OldUdmEnergyItem = UdmEnergyItem;
+	ClearLCD();
+	while(!ExitChangeUdm)
+	{
+		LCDPrintString(ONE, CENTER_ALIGN, "Visualizzazione");
+		LCDPrintString(TWO, CENTER_ALIGN, "misura energia in:");
+		LCDPrintString(THREE, CENTER_ALIGN, UdmEnergyScale[UdmEnergyItem].UdmStr);
+		ButtonPress = CheckButtons();
+		switch(ButtonPress)
+		{
+			case BUTTON_UP:
+				BlinkLed(BUTTON_LED);
+				if(UdmEnergyItem > 0)
+					UdmEnergyItem--;
+				else
+					UdmEnergyItem = MAX_UDM_ITEM - 1;
+				ClearLCDLine(THREE);
+				break;
+			case BUTTON_DOWN:
+				BlinkLed(BUTTON_LED);
+				if(UdmEnergyItem < MAX_UDM_ITEM - 1)
+					UdmEnergyItem++;
+				else
+					UdmEnergyItem = WATT_ORA;
+				ClearLCDLine(THREE);
+				break;
+			case BUTTON_LEFT:
+				BlinkLed(BUTTON_LED);
+				ExitChangeUdm = true;
+				break;
+			case BUTTON_SET:
+				BlinkLed(BUTTON_LED);
+				if(UdmEnergyItem != OldUdmEnergyItem)
+				{
+					ClearLCD();
+					LCDPrintString(TWO, CENTER_ALIGN, "Settato!");
+					WriteMemory(UDM_ENERGY_ADDR, UdmEnergyItem);
+					delay(DELAY_INFO_MSG);
+				}
+				else
+				{
+					ClearLCD();
+					LCDPrintString(TWO, CENTER_ALIGN, "Uguale a prima");
+					EepromUpdate(UDM_ENERGY_ADDR, UdmEnergyItem);
+					delay(DELAY_INFO_MSG);					
+				}
+				ExitChangeUdm = true;
+				break;
+			default:
+				break;
+		}
+		ButtonPress = NO_PRESS;
+		delay(WHILE_LOOP_DELAY);
+	}
+	ClearLCD();
 }
 
 bool CheckYesNo()

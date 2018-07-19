@@ -1,5 +1,7 @@
-// #include <Arduino.h>
 
+#ifndef I2C_NANO_H
+#define I2C_NANO_H
+#include <Arduino.h>
 #define ARDUINO_ADDR	0x08
 
 
@@ -15,8 +17,15 @@ typedef enum
 typedef enum
 {
 	BUTTON = 0,
-	ENERGY
-}READ_ITEM;
+	ENERGY,
+	CURRENT
+}I2C_WRITE_READ;
 
 short CheckButtons(void);
-void ReadFromNano(short WhatRead);
+String EnergyValueStr(void);
+String CurrentValueStr(void);
+String ReadMeasure(short WichInfo);
+void ReadButton(short *ButtonVal);
+// void ReadEnergy(String *EnergyStr);
+// void ReadCurrent(String *CurrentStr);
+#endif

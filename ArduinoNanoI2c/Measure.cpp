@@ -1,61 +1,99 @@
 #include "ArduinoNanoI2c.h"
 #include "Measure.h"
 
-#define 	TENSIONE_LINEA	230.0
-#define 	MV_PER_A		100
+const float TensioneLinea  = 230.0;
+const float MVoltPerAmpere = 100.0;
 
-double 		       EnergyMeasured;
-static double      EnergyInst;
-static uint32_t    EnergyTimeCounter;
-static const float PowerMeasureTEST = TENSIONE_LINEA * 1.0;
-// float   	PowerMeasure;
-String		EnergyStr;
+float 			  CurrentCalculated;
+float 		      EnergyMeasured;
+static float      EnergyAcc;
+static uint16_t   EnergyAccCnt;
+float   	      PowerMeasure;
+
+String		      EnergyStr;
+String		      CurrentStr;
+
+const uint16_t SimWave[10] =
+{
+	400, 
+	420,
+	430,
+	440,
+	460,
+	500,
+	520,
+	530,
+	550,
+	600,
+}; 
 
 static float CalcCurrent()
 {
-	float Current = 0;
-	int ReadedValue = 0;
-	int MaxValue = 0;          // store max value here
-	int MinValue = 1024;       // store min value here
+	float mVolt = 0.0, Current = 0.0;
+	uint32_t CurrentAcc = 0;
+	uint16_t ReadedValue = 0, AdcOffset = ZERO_CURRENT_ANALOG_VALUE;
+	// uint8_t TmpCnt = 0;
+	// uint16_t MaxVal = 0, MinVal = 1023;
 	
-	for(int cnt = 0; cnt < 500; cnt++) // legge per 50 ms
+	for(int cnt = 0; cnt < N_CAMPIONI_CORRENTE; cnt++) // legge per 200 ms (10 periodi di rete a 50 Hz)
 	{	
-		ReadedValue = analogRead(A0);
-		if (ReadedValue > MaxValue) 
-		{
-		   /*record the maximum sensor value*/
-		   MaxValue = ReadedValue;
-		}
-		if (ReadedValue < MinValue) 
-		{
-		   /*record the maximum sensor value*/
-		   MinValue = ReadedValue;
-		}
+		ReadedValue = (analogRead(A0) - AdcOffset);
+		CurrentAcc += (uint32_t)(ReadedValue * ReadedValue);		
 	}
-	Current = ((MaxValue - MinValue) * 5.0) / 1024.0; // Conversione per uscita analogica
-	Current = (Current / 2.0) * 0.707; 	    // Calcolo per RMS
-	Current = (Current * 1000) / MV_PER_A;  // Conversione da volt ad ampere
+	mVolt = ((sqrt((float)CurrentAcc / (float)N_CAMPIONI_CORRENTE))) * 4.9;
+	Current = (mVolt / MVoltPerAmpere);
+	
+	// mVolt = ((MaxVal - MinVal) * 5.0) / 1023.0;
+	// mVolt = (mVolt / 2.0) * 0.707;
+	// Current = (mVolt * 1000.0) / MV_PER_A;
+
 	return Current;
 }
 
+// static float CalcCurrent()
+// {
+	// float Current = 0.0;
+	// float mVolt = 0.0;
+	// uint16_t ReadedValue = 0;
+	// uint8_t TmpCnt = 0;
+	// uint16_t MaxVal = 0, MinVal = 1023;
+	
+	// for(int cnt = 0; cnt < N_CAMPIONI_CORRENTE; cnt++) // legge per 80 ms (4 periodi di rete a 50 Hz)
+	// {	
+		// ReadedValue = analogRead(A0);
+       // // see if you have a new maxValue
+       // if (ReadedValue > MaxVal) 
+       // {
+           // /*record the maximum sensor value*/
+           // MaxVal = ReadedValue;
+       // }
+       // if (ReadedValue < MinVal) 
+       // {
+           // /*record the maximum sensor value*/
+           // MinVal = ReadedValue;
+       // }
+	// }
+	// mVolt = ((MaxVal - MinVal) * 5.0) / 1023.0;
+	// mVolt = (mVolt / 2.0) * 0.707;
+	// Current = (mVolt * 1000.0) / MV_PER_A;
 
-void CalcEnergy() // 200ms c.a.
+	// return Current;
+// }
+
+
+void CalcEnergy() // 100ms ca
 {
-	float 	CurrentCalculated;
 	CurrentCalculated = CalcCurrent();
-	// PowerMeasure = CurrentCalculated * TENSIONE_LINEA;
-	for(int cnt = 0; cnt < 15; cnt++)
-	{
-		EnergyTimeCounter++;
-		EnergyInst += PowerMeasureTEST;
-		delay(10);
-	}
+	PowerMeasure = CurrentCalculated * (float)TENSIONE_LINEA;
+	EnergyAcc += PowerMeasure;
+	EnergyAccCnt++;
 }
 
 void EnergyValueSec()
 {
-	EnergyMeasured += (EnergyInst / (double)EnergyTimeCounter);	
-	EnergyInst = 0.0;
-	EnergyTimeCounter = 0;
-	EnergyStr = String(EnergyMeasured / 3600.0); // Invio la stringa già formattata per W/h
+	EnergyMeasured += (EnergyAcc / (float)EnergyAccCnt);	
+	EnergyAccCnt = 0;
+	EnergyAcc = 0.0;
+	EnergyStr = String(EnergyMeasured); // Invio la stringa formattata in W/s
+	CurrentStr = String(CurrentCalculated);
 }
