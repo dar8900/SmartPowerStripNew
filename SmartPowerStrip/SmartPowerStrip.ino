@@ -9,7 +9,7 @@
 #include "Menu.h"
 #include "Band.h"
 #include "Rele.h"
-#include "Buttons.h"
+#include "I2CNano.h"
 
 
 #undef FIRST_GO
@@ -94,14 +94,19 @@ uint8_t EmptyIcon[]
 FLAGS Flag;
 short EnterSetup;
 
-String VersionValue = "1.6";
-String VersionDate = "8/07/18";
+String VersionValue = "1.7";
+String VersionDate = "9/07/18";
 
 void BlinkLed(short pin)
 {
 	ON(pin);
 	delay(5);
 	OFF(pin);
+}
+
+void delayms(short ms)
+{
+	delay(ms);
 }
 
 void CheckEvents()
