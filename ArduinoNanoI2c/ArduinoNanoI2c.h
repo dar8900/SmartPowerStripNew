@@ -20,7 +20,14 @@ enum
 	DOWN,
 	LEFT,
 	SET,
-	BUTTON_LED = 13
+	RELE_1,
+	RELE_2,
+	RELE_3,
+	RELE_4,
+	RELE_5,
+	RELE_6,
+	RELE_7,
+	RELE_8	
 };
 
 enum
@@ -28,5 +35,5 @@ enum
 	BUTTON = 0,
 	ENERGY,
 	CURRENT,
-	NO_DATA
+	NO_DATA = 19
 };

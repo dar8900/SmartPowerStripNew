@@ -75,6 +75,23 @@ String ReadMeasure(short WichInfo)
 	return InfoStr;
 }
 
+void ReleOn(short ReleIdx)
+{
+	short RealRele = ReleIdx + RELE_1_ON;
+	Wire.beginTransmission(ARDUINO_ADDR);
+	Wire.write(RealRele);
+	Wire.endTransmission();
+	delay(1);
+}
+
+void ReleOff(short ReleIdx)
+{
+	short RealRele = ReleIdx + RELE_1_OFF;
+	Wire.beginTransmission(ARDUINO_ADDR);
+	Wire.write(RealRele);
+	Wire.endTransmission();
+	delay(1);
+}
 // void ReadEnergy(String *EnergyStr)
 // {
 	// char ReadInfo[15];

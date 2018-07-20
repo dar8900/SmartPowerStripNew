@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include "ArduinoNanoI2c.h"
 #include "Measure.h"
-
+#include "ReleI2C.h"
 
 
 short ButtonPress = NO_PRESS;
@@ -64,6 +64,26 @@ static void SendInfo()
 		case CURRENT:
 			Wire.write(CurrentStr.c_str());
 			break;
+		case RELE_1_OFF:
+		case RELE_2_OFF:
+		case RELE_3_OFF:
+		case RELE_4_OFF:
+		case RELE_5_OFF:
+		case RELE_6_OFF:
+		case RELE_7_OFF:
+		case RELE_8_OFF:
+			ReleOff(WichData);
+			break;
+		case RELE_1_ON:		
+		case RELE_2_ON:		
+		case RELE_3_ON:		
+		case RELE_4_ON:		
+		case RELE_5_ON:		
+		case RELE_6_ON:		
+		case RELE_7_ON:		
+		case RELE_8_ON:	
+			ReleOn(WichData);
+			break;		
 		default:
 			break;
 	}
@@ -85,7 +105,14 @@ void setup()
 	pinMode(DOWN, INPUT);
 	pinMode(LEFT, INPUT);
 	pinMode(SET, INPUT);
-	pinMode(BUTTON_LED, OUTPUT);
+	pinMode(RELE_1, OUTPUT);
+	pinMode(RELE_2, OUTPUT);
+	pinMode(RELE_3, OUTPUT);
+	pinMode(RELE_4, OUTPUT);
+	pinMode(RELE_5, OUTPUT);
+	pinMode(RELE_6, OUTPUT);
+	pinMode(RELE_7, OUTPUT);
+	pinMode(RELE_8, OUTPUT);
 	Wire.onReceive(WichInfo);
 	Wire.onRequest(SendInfo);
 }
