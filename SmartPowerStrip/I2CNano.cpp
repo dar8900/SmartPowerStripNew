@@ -77,18 +77,18 @@ String ReadMeasure(short WichInfo)
 
 void ReleOn(short ReleIdx)
 {
-	short RealRele = ReleIdx + RELE_1_ON;
+	short Rele2Send = ReleIdx + RELE_1_ON;
 	Wire.beginTransmission(ARDUINO_ADDR);
-	Wire.write(RealRele);
+	Wire.write(Rele2Send);
 	Wire.endTransmission();
 	delay(1);
 }
 
 void ReleOff(short ReleIdx)
 {
-	short RealRele = ReleIdx + RELE_1_OFF;
+	short Rele2Send = ReleIdx + RELE_1_OFF;
 	Wire.beginTransmission(ARDUINO_ADDR);
-	Wire.write(RealRele);
+	Wire.write(Rele2Send);
 	Wire.endTransmission();
 	delay(1);
 }

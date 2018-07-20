@@ -1,3 +1,7 @@
+#ifndef RELE_I2C_H
+#define RELE_I2C_H
+#include <Arduino.h>
+
 typedef enum
 {
 	RELE_1_OFF = 3,
@@ -21,3 +25,4 @@ typedef enum
 
 void ReleOn(short ReleIdx);
 void ReleOff(short ReleIdx);
+#endif

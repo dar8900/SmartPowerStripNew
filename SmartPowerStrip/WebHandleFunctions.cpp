@@ -1044,6 +1044,7 @@ void HandleRele1()
 		if(!Rele[RELE_1].IsActive)
 		{
 			ON(ReleIdx2Pin(RELE_1)); //LED ON
+			ReleOn(RELE_1);
 			Rele[RELE_1].IsActive = true;
 			Rele[RELE_1].TurnOnTime.day = PresentTime.day;
 			Rele[RELE_1].TurnOnTime.hour = PresentTime.hour;
@@ -1060,6 +1061,7 @@ void HandleRele1()
 		if(Rele[RELE_1].IsActive)
 		{
 			OFF(ReleIdx2Pin(RELE_1)); //LED OFF
+			ReleOff(RELE_1);
 			Rele[RELE_1].IsActive = false;
 			Rele[RELE_1].ActiveTime = SetTimeVarRele(0,0,0,0);
 			Rele[RELE_1].TurnOnTime = SetTimeVarRele(0,0,0,0);
@@ -1082,6 +1084,7 @@ void HandleRele2()
 		if(!Rele[RELE_2].IsActive)
 		{
 			ON(ReleIdx2Pin(RELE_2)); //LED ON
+			ReleOn(RELE_2);
 			Rele[RELE_2].IsActive = true;
 			Rele[RELE_2].TurnOnTime.day = PresentTime.day;
 			Rele[RELE_2].TurnOnTime.hour = PresentTime.hour;
@@ -1098,6 +1101,7 @@ void HandleRele2()
 		if(Rele[RELE_2].IsActive)
 		{
 			OFF(ReleIdx2Pin(RELE_2)); //LED OFF
+			ReleOff(RELE_2);
 			Rele[RELE_2].IsActive = false;
 			Rele[RELE_2].ActiveTime = SetTimeVarRele(0,0,0,0);
 			Rele[RELE_2].TurnOnTime = SetTimeVarRele(0,0,0,0);
@@ -1119,6 +1123,7 @@ void HandleRele3()
 		if(!Rele[RELE_3].IsActive)
 		{
 			ON(ReleIdx2Pin(RELE_3)); //LED ON
+			ReleOn(RELE_3);
 			Rele[RELE_3].IsActive = true;
 			Rele[RELE_3].TurnOnTime.day = PresentTime.day;
 			Rele[RELE_3].TurnOnTime.hour = PresentTime.hour;
@@ -1135,6 +1140,7 @@ void HandleRele3()
 		if(Rele[RELE_3].IsActive)
 		{
 			OFF(ReleIdx2Pin(RELE_3)); //LED OFF
+			ReleOff(RELE_3);
 			Rele[RELE_3].IsActive = false;
 			Rele[RELE_3].ActiveTime = SetTimeVarRele(0,0,0,0);
 			Rele[RELE_3].TurnOnTime = SetTimeVarRele(0,0,0,0);
@@ -1157,6 +1163,7 @@ void HandleRele4()
 		if(!Rele[RELE_4].IsActive)
 		{
 			ON(ReleIdx2Pin(RELE_4)); //LED ON
+			ReleOn(RELE_4);
 			Rele[RELE_4].IsActive = true;
 			Rele[RELE_4].TurnOnTime.day = PresentTime.day;
 			Rele[RELE_4].TurnOnTime.hour = PresentTime.hour;
@@ -1173,6 +1180,7 @@ void HandleRele4()
 		if(Rele[RELE_4].IsActive)
 		{
 			OFF(ReleIdx2Pin(RELE_4)); //LED OFF
+			ReleOff(RELE_4);
 			Rele[RELE_4].IsActive = false;
 			Rele[RELE_4].ActiveTime = SetTimeVarRele(0,0,0,0);
 			Rele[RELE_4].TurnOnTime = SetTimeVarRele(0,0,0,0);
@@ -1195,6 +1203,7 @@ void HandleRele5()
 		if(!Rele[RELE_5].IsActive)
 		{
 			ON(ReleIdx2Pin(RELE_5)); //LED ON
+			ReleOn(RELE_5);
 			Rele[RELE_5].IsActive = true;
 			Rele[RELE_5].TurnOnTime.day = PresentTime.day;
 			Rele[RELE_5].TurnOnTime.hour = PresentTime.hour;
@@ -1211,6 +1220,7 @@ void HandleRele5()
 		if(Rele[RELE_5].IsActive)
 		{
 			OFF(ReleIdx2Pin(RELE_5)); //LED OFF
+			ReleOff(RELE_5);
 			Rele[RELE_5].IsActive = false;
 			Rele[RELE_5].ActiveTime = SetTimeVarRele(0,0,0,0);
 			Rele[RELE_5].TurnOnTime = SetTimeVarRele(0,0,0,0);
@@ -1234,6 +1244,7 @@ void HandleRele6()
 		if(!Rele[RELE_6].IsActive)
 		{
 			ON(ReleIdx2Pin(RELE_6)); //LED ON
+			ReleOn(RELE_6);
 			Rele[RELE_6].IsActive = true;
 			Rele[RELE_6].TurnOnTime.day = PresentTime.day;
 			Rele[RELE_6].TurnOnTime.hour = PresentTime.hour;
@@ -1250,6 +1261,7 @@ void HandleRele6()
 		if(Rele[RELE_6].IsActive)
 		{
 			OFF(ReleIdx2Pin(RELE_6)); //LED OFF
+			ReleOff(RELE_6);
 			Rele[RELE_6].IsActive = false;
 			Rele[RELE_6].ActiveTime = SetTimeVarRele(0,0,0,0);
 			Rele[RELE_6].TurnOnTime = SetTimeVarRele(0,0,0,0);
@@ -1272,6 +1284,7 @@ void HandleRele7()
 		if(!Rele[RELE_7].IsActive)
 		{
 			ON(ReleIdx2Pin(RELE_7)); //LED ON
+			ReleOn(RELE_7);
 			Rele[RELE_7].IsActive = true;
 			Rele[RELE_7].TurnOnTime.day = PresentTime.day;
 			Rele[RELE_7].TurnOnTime.hour = PresentTime.hour;
@@ -1288,6 +1301,7 @@ void HandleRele7()
 		if(Rele[RELE_7].IsActive)
 		{
 			OFF(ReleIdx2Pin(RELE_7)); //LED OFF
+			ReleOff(RELE_7);
 			Rele[RELE_7].IsActive = false;
 			Rele[RELE_7].ActiveTime = SetTimeVarRele(0,0,0,0);
 			Rele[RELE_7].TurnOnTime = SetTimeVarRele(0,0,0,0);
@@ -1310,6 +1324,7 @@ void HandleRele8()
 		if(!Rele[RELE_8].IsActive)
 		{
 			ON(ReleIdx2Pin(RELE_8)); //LED ON
+			ReleOn(RELE_8);
 			Rele[RELE_8].IsActive = true;
 			Rele[RELE_8].TurnOnTime.day = PresentTime.day;
 			Rele[RELE_8].TurnOnTime.hour = PresentTime.hour;
@@ -1326,6 +1341,7 @@ void HandleRele8()
 		if(Rele[RELE_8].IsActive)
 		{
 			OFF(ReleIdx2Pin(RELE_8)); //LED OFF
+			ReleOff(RELE_8);
 			Rele[RELE_8].IsActive = false;
 			Rele[RELE_8].ActiveTime = SetTimeVarRele(0,0,0,0);
 			Rele[RELE_8].TurnOnTime = SetTimeVarRele(0,0,0,0);

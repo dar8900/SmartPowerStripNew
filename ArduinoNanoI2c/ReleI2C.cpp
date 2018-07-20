@@ -1,10 +1,11 @@
+#include "ArduinoNanoI2c.h"
 #include "ReleI2C.h"
 
 extern short WichData;
 
 static short ReleIndx2Pin(short ReleIdx)
 {
-	short Pin = 0;
+	short Pin = RELE_1;
 	switch(ReleIdx)
 	{
 		case RELE_1_OFF:

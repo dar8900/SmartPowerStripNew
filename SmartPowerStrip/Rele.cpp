@@ -33,6 +33,7 @@ void TurnOffAllRele()
 	for(ReleIndx = RELE_1; ReleIndx < RELE_MAX; ReleIndx++)
 	{
 		OFF(ReleIdx2Pin(ReleIndx));
+		ReleOff(ReleIndx);
 		Rele[ReleIndx].IsActive = false;
 		delay(500);
 		Rele[ReleIndx].TurnOnTime = SetTimeVarRele(0,0,0,0);
@@ -50,6 +51,7 @@ void TurnOnAllRele()
 	for(ReleIndx = RELE_1; ReleIndx < RELE_MAX; ReleIndx++)
 	{
 		ON(ReleIdx2Pin(ReleIndx));
+		ReleOn(ReleIndx);
 		Rele[ReleIndx].IsActive = true;
 		Rele[ReleIndx].TurnOnTime.day = PresentTime.day;
 		Rele[ReleIndx].TurnOnTime.hour = PresentTime.hour;
@@ -113,6 +115,7 @@ void TakeReleTime()
 					Rele[ReleIndx].HaveTimer = false;
 					Rele[ReleIndx].IsActive = false;
 					OFF(ReleIdx2Pin(ReleIndx));
+					ReleOff(ReleIndx);
 					String ReleName;
 					ReleName = "Presa " + String(ReleIndx+1) + " spenta";
 					LCDShowPopUp(ReleName);
@@ -146,10 +149,12 @@ bool ReleInit(bool FirstGo)
 		for(ReleIndx = RELE_1; ReleIndx < RELE_MAX; ReleIndx++)
 		{
 			ON(ReleIdx2Pin(ReleIndx));
+			ReleOn(ReleIndx);
 			Rele[ReleIndx].IsActive = true;
 			ShowReleIcons(THREE);
 			delay(500);
 			OFF(ReleIdx2Pin(ReleIndx));
+			ReleOff(ReleIndx);
 			Rele[ReleIndx].IsActive = false;
 			ShowReleIcons(THREE);
 			delay(500);
@@ -178,11 +183,13 @@ void ReleReStart()
 		{
 			Rele[ReleIndx].IsActive = false;
 			OFF(ReleIdx2Pin(ReleIndx));
+			ReleOff(ReleIndx);
 		}
 		else
 		{
 			Rele[ReleIndx].IsActive = true;
 			ON(ReleIdx2Pin(ReleIndx));
+			ReleOn(ReleIndx);
 			Flag.AllReleDown = false;
 			Rele[ReleIndx].TurnOnTime.day = PresentTime.day;
 			Rele[ReleIndx].TurnOnTime.hour = PresentTime.hour;

@@ -498,11 +498,13 @@ bool ManualRele()
 							Rele[ReleIndx].ActiveTime = SetTimeVarRele(0,0,0,0);
 							Rele[ReleIndx].TurnOnTime = SetTimeVarRele(0,0,0,0);
 							OFF(ReleIdx2Pin(ReleIndx));
+							ReleOff(ReleIndx);
 						}
 						else
 						{
 							Rele[ReleIndx].IsActive = true;
 							ON(ReleIdx2Pin(ReleIndx));
+							ReleOn(ReleIndx);
 							Flag.AllReleDown = false;
 							Rele[ReleIndx].TurnOnTime.day = PresentTime.day;
 							Rele[ReleIndx].TurnOnTime.hour = PresentTime.hour;
@@ -1150,6 +1152,7 @@ bool AssignReleTimer()
 						ClearLCD();
 						Rele[ReleNumber].HaveTimer = SetTimerRele(ReleNumber);
 						ON(ReleIdx2Pin(ReleNumber));
+						ReleOn(ReleNumber);
 						Flag.AllReleDown = false;
 						CheckEvents();
 						TimerAssignedCnt++;
