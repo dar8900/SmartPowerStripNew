@@ -2,7 +2,7 @@
 #define WEB_H
 #define REQ_BUF_SZ   60
 
-#undef WPS_CONNECTION 
+#define WPS_CONNECTION 
 
 typedef enum
 {

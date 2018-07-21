@@ -48,22 +48,8 @@ static void WichInfo()
 	{
    		WichData = Wire.read();
 	}
-}
-
-static void SendInfo()
-{
 	switch(WichData)
 	{
-		case BUTTON:
-			Wire.write(ButtonPress);
-			ButtonPress = NO_PRESS;
-			break;
-		case ENERGY:
-			Wire.write(EnergyStr.c_str());
-			break;
-		case CURRENT:
-			Wire.write(CurrentStr.c_str());
-			break;
 		case RELE_1_OFF:
 		case RELE_2_OFF:
 		case RELE_3_OFF:
@@ -85,6 +71,23 @@ static void SendInfo()
 			ReleOn(WichData);
 			break;		
 		default:
+			break;
+	}
+}
+
+static void SendInfo()
+{
+	switch(WichData)
+	{
+		case BUTTON:
+			Wire.write(ButtonPress);
+			ButtonPress = NO_PRESS;
+			break;
+		case ENERGY:
+			Wire.write(EnergyStr.c_str());
+			break;
+		case CURRENT:
+			Wire.write(CurrentStr.c_str());
 			break;
 	}
 	WichData = NO_DATA;

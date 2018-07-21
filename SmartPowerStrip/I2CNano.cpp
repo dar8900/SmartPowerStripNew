@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include "SmartPowerStrip.h"
 #include "I2CNano.h"
+// #include "LCDLib.h"
 
 #define 	CHAR_FROM_NANO	    9
 
@@ -82,6 +83,10 @@ void ReleOn(short ReleIdx)
 	Wire.write(Rele2Send);
 	Wire.endTransmission();
 	delay(1);
+	// ClearLCD();
+	// LCDPrintValue(ONE, CENTER_ALIGN, Rele2Send);
+	// delay(2000);
+	// ClearLCD();
 }
 
 void ReleOff(short ReleIdx)

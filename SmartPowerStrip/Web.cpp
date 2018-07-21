@@ -32,7 +32,7 @@ const WIFI_LIST MyNetworkList[] =
 {
 	{"No Conn."     , "password"							, "NoConn" 					},
 	{"Dario Cell"	, "dari9299"							, "DEO DOOM"				},
-	{"Wifi Nonna"	, "3lz2HgMJciM4Zkw73EzqMD1h"			, "TIM-19727043_RPT_NONNA"   },
+	{"Wifi Nonna"	, "3lz2HgMJciM4Zkw73EzqMD1h"			, "TIM-19727043_RPT_NONNA"  },
 	{"Camera mia"	, "dariolinorobby198919611962"			, "WIFI-56878495"			},
 	{"Salotto Casa"	, "3lz2HgMJciM4Zkw73EzqMD1h"			, "TIM-19727043"			},
 	{"Camera Grande", "3lz2HgMJciM4Zkw73EzqMD1h"			, "TIM-19727043_RPT"		},
