@@ -88,10 +88,6 @@ void ReleOn(short ReleIdx)
 	Wire.write(Rele2Send);
 	Wire.endTransmission();
 	delay(1);
-	// ClearLCD();
-	// LCDPrintValue(ONE, CENTER_ALIGN, Rele2Send);
-	// delay(2000);
-	// ClearLCD();
 }
 
 void ReleOff(short ReleIdx)
@@ -102,36 +98,3 @@ void ReleOff(short ReleIdx)
 	Wire.endTransmission();
 	delay(1);
 }
-// void ReadEnergy(String *EnergyStr)
-// {
-	// char ReadInfo[15];
-	// short TotChar = 0;
-	// Wire.beginTransmission(ARDUINO_ADDR);
-	// Wire.write(ENERGY);
-	// Wire.endTransmission();
-	// delay(1);
-	// Wire.requestFrom(ARDUINO_ADDR, CHAR_FROM_NANO);
-	// while(Wire.available())
-	// {
-   		// ReadInfo[TotChar] = Wire.read();
-		// *EnergyStr += String(ReadInfo[TotChar]);
- 		// TotChar++;
-	// }	
-// }
-
-// void ReadCurrent(String *CurrentStr)
-// {
-	// char ReadInfo[10];
-	// short TotChar = 0;
-	// Wire.beginTransmission(ARDUINO_ADDR);
-	// Wire.write(CURRENT);
-	// Wire.endTransmission();
-	// delay(1);
-	// Wire.requestFrom(ARDUINO_ADDR, 5);
-	// while(Wire.available())
-	// {
-   		// ReadInfo[TotChar] = Wire.read();
-		// *CurrentStr += String(ReadInfo[TotChar]);
- 		// TotChar++;
-	// }	
-// }

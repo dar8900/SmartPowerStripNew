@@ -128,7 +128,7 @@ void TakeReleTime()
 
 void SaveReleStatus(short ReleIndx, short Status)
 {
-	WriteMemory(Rele[ReleIndx].EepromAddr, Status);
+	EepromUpdate(Rele[ReleIndx].EepromAddr, Status);
 }
 
 bool ReleInit(bool FirstGo)
@@ -179,7 +179,7 @@ void ReleReStart()
 	for(ReleIndx = RELE_1; ReleIndx < RELE_MAX; ReleIndx++)
 	{
 		ReadMemory(Rele[ReleIndx].EepromAddr, 1, &TmpReleActive);
-		if(TmpReleActive == 0)
+		if(TmpReleActive == STATUS_OFF)
 		{
 			Rele[ReleIndx].IsActive = false;
 			OFF(ReleIdx2Pin(ReleIndx));
