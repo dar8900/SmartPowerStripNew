@@ -35,5 +35,6 @@ enum
 	BUTTON = 0,
 	ENERGY,
 	CURRENT,
-	NO_DATA = 19
+	POWER,
+	NO_DATA = 20
 };

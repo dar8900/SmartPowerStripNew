@@ -58,7 +58,7 @@ const String WifiConfigName[]
 
 void WifiConfInit()
 {
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	short WifiConfigItem = WPS;
 	bool ExitWifiConfInit = false;
 	ClearLCD();
@@ -126,7 +126,7 @@ void WifiInit()
 
 static void AssignSsid()
 {
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	short WifiListItem = DARIO_CELL;
 	bool ExitAssignSsid = false;
 	ClearLCD();
@@ -179,7 +179,7 @@ bool WPSConnection()
 	bool WpsSuccess = false, FindSsid = false, WpsConfStart = false, ExitWpsChoiceConf = false;
 	short NumbPoint = 0;
 	short WifiListItem = NO_CONN;
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	ClearLCD();
 	LCDPrintString(ONE, CENTER_ALIGN, "Premere il");
 	LCDPrintString(TWO, CENTER_ALIGN, "pulsante WPS");
@@ -292,7 +292,7 @@ void WifiWiredConnections()
 	short TimerNoConnection = 0;
 	bool ExitWifiInit = false;
 	short WifiListItem = NO_CONN;
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	short OldWifiItem = 0;
 	String HostnameExtended = "http://", NomeWifi;
 	Flag.WifiActive = false;

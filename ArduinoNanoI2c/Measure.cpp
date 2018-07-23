@@ -12,6 +12,7 @@ float   	      PowerMeasure;
 
 String		      EnergyStr;
 String		      CurrentStr;
+String 			  PowerStr;
 
 const uint16_t SimWave[10] =
 {
@@ -81,7 +82,7 @@ static float CalcCurrent()
 // }
 
 
-void CalcEnergy() // 100ms ca
+void CalcEnergy() // 200ms ca
 {
 	CurrentCalculated = CalcCurrent();
 	PowerMeasure = CurrentCalculated * (float)TENSIONE_LINEA;
@@ -89,11 +90,12 @@ void CalcEnergy() // 100ms ca
 	EnergyAccCnt++;
 }
 
-void EnergyValueSec()
+void MeasureValueSec()
 {
 	EnergyMeasured += (EnergyAcc / (float)EnergyAccCnt);	
 	EnergyAccCnt = 0;
 	EnergyAcc = 0.0;
 	EnergyStr = String(EnergyMeasured); // Invio la stringa formattata in W/s
 	CurrentStr = String(CurrentCalculated);
+	PowerStr = String(PowerMeasure);
 }

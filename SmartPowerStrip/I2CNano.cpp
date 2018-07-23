@@ -8,7 +8,7 @@
 
 short CheckButtons()
 {
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	ReadButton(&ButtonPress);
 	return ButtonPress;
 }
@@ -23,9 +23,14 @@ String CurrentValueStr()
 	return ReadMeasure(CURRENT);
 }
 
-void ReadButton(short *ButtonVal)
+String PowerValueStr()
 {
-	short ReadInfo;
+	return ReadMeasure(POWER);
+}
+
+void ReadButton(uint8_t *ButtonVal)
+{
+	uint8_t ReadInfo;
 	Wire.beginTransmission(ARDUINO_ADDR);
 	Wire.write(BUTTON);
 	Wire.endTransmission();

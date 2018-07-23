@@ -251,7 +251,7 @@ void ReadBandValues(short WichItem)
 bool SetTimeBand()
 {
 	bool ExitSetTimeBand = false, ValidSet = false;
-	short ButtonPress, TimeVar = INIT_HOUR;
+	uint8_t ButtonPress, TimeVar = INIT_HOUR;
 	short Hour = PresentTime.hour, Minute = PresentTime.minute;
 	short OldHour = PresentTime.hour, OldMinute = PresentTime.minute;
 	String MinuteStr;

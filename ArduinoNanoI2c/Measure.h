@@ -9,4 +9,4 @@
 #define 	N_CAMPIONI_ENERGIA	40
 
 void CalcEnergy(void);
-void EnergyValueSec(void);
+void MeasureValueSec(void);

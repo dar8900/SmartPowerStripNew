@@ -4,7 +4,7 @@
 
 typedef enum
 {
-	RELE_1_OFF = 3,
+	RELE_1_OFF = 4,
 	RELE_2_OFF,
 	RELE_3_OFF,
 	RELE_4_OFF,
@@ -19,7 +19,7 @@ typedef enum
 	RELE_5_ON,
 	RELE_6_ON,
 	RELE_7_ON,
-	RELE_8_ON	
+	RELE_8_ON	// 19
 	
 }RECEIVE_RELE_STATUS;
 

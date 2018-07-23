@@ -59,7 +59,7 @@ bool ChangeTime()
 	TakePresentTime();
 	short Hour = PresentTime.hour, Minute = PresentTime.minute, Month = PresentTime.month, Day = PresentTime.day, Year = PresentTime.year;
     short TimeSM = CHANGE_HOUR;
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	bool ExitTimeChange = false;
 	String MinuteStr;
 	ClearLCD();

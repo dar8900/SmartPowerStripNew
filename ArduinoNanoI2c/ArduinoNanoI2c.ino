@@ -11,6 +11,7 @@ short WichData = NO_DATA;
 
 extern String		EnergyStr;
 extern String		CurrentStr;
+extern String       PowerStr;
 
 static bool ChekButtons()
 {
@@ -89,6 +90,11 @@ static void SendInfo()
 		case CURRENT:
 			Wire.write(CurrentStr.c_str());
 			break;
+		case POWER:
+			Wire.write(CurrentStr.c_str());
+			break;
+		default:
+			break;
 	}
 	WichData = NO_DATA;
 }
@@ -128,7 +134,7 @@ void loop()
 	if(TickSecond == (1000 / MAIN_DELAY))
 	{
 		TickSecond = 0;
-		EnergyValueSec();	
+		MeasureValueSec();	
 	}	
 	
 }

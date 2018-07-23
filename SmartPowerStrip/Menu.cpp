@@ -229,7 +229,7 @@ void MainMenu()
 {
 	bool ExitMainMenu = false;
 	bool ReEnterMenu = false;
-	short ButtonPress = 0, Item = MANUAL_RELE;
+	uint8_t ButtonPress = 0, Item = MANUAL_RELE;
 	ClearLCD();
 	LCDPrintString(ONE  , CENTER_ALIGN, "Premere Up o Down");
 	LCDPrintString(TWO  , CENTER_ALIGN, "per scegliere");
@@ -332,7 +332,7 @@ void MainMenu()
 bool Setup()
 {
 	bool ExitSetup = false;
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	short SetupItem = CHANGE_TIME;
 	ClearLCD();
 	while(!ExitSetup)
@@ -403,7 +403,7 @@ bool ManualRele()
 	short ReleIndx = RELE_1;
 	bool ReleSetted = false, OnOffAll = false,  ExitAll = false;
 	String SelRele;
-	short ButtonPress = 0, Status = 0, OldStatus = 0;
+	uint8_t ButtonPress = 0, Status = 0, OldStatus = 0;
 	if(Flag.AllReleUp)
 	{
 		ClearLCD();
@@ -538,7 +538,7 @@ bool ManualRele()
 bool ChangeTimeBand()
 {
 	bool ExitChangeBand = false, OkBandSet = true;
-	short ButtonPress;
+	uint8_t ButtonPress;
     ClearLCD();
 	CheckEvents();
 	LCDPrintString(ONE  , CENTER_ALIGN, "Cambiare la banda");
@@ -641,7 +641,7 @@ bool ChangeTimeBand()
 bool WifiConnect()
 {
 	bool WifiDisconnectChoice = false, WpsChoice = false, WpsConfStart = false, WpsSuccess = false;
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	if(Flag.WifiActive)
 	{
 		if(!Flag.WpsConfigSelected)
@@ -699,7 +699,7 @@ bool WifiConnect()
 
 static bool BackPressed()
 {
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	short TimerPressing = 50; // 0.5 sec
 	bool Pressed = false;
 	while(TimerPressing > 0)
@@ -872,15 +872,18 @@ bool HelpInfo()
 bool ShowMeasures()
 {
 	uint16_t TimerDisplay = 3000; // 60s con delay 10ms
+	uint16_t TimerCurrentPower = 1500; // Cambio ogno 30s con delay 10ms tra corrente e potenza
 	uint8_t FormatRange = 0;
 	short TimerRefreshMeasure = TIMER_REFRESH_MEASURE; 
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	short UdmEnergy = 0;
 	String EnergyStr;
 	String CurrentStr;
+	String PowerStr;
 	float EnergyScaled = 0.0;
 	float CurrentScaled = 0.0;
-	bool ExitShowEnergy = false, FormatEnergy = false;
+	float PowerScaled = 0.0;
+	bool ExitShowEnergy = false, FormatEnergy = false, CurrentOrPower = false;
 	ReadMemory(UDM_ENERGY_ADDR, 1, &UdmEnergy);
 	ClearLCD();
 	if(!Flag.IsDisplayOn)
@@ -890,19 +893,35 @@ bool ShowMeasures()
 	}
 	while(!ExitShowEnergy)
 	{
-		LCDPrintString(ONE, CENTER_ALIGN, "Corrente Misurata:");
+		if(!CurrentOrPower)
+			LCDPrintString(ONE, CENTER_ALIGN, "Corrente Misurata:");
+		else
+			LCDPrintString(ONE, CENTER_ALIGN, "Potenza Misurata:");
 		LCDPrintString(THREE, CENTER_ALIGN, "Energia Misurata:");
 		if(TimerRefreshMeasure == TIMER_REFRESH_MEASURE)
 		{
 			ClearLCDLine(TWO);
 			ClearLCDLine(FOUR);
-			CurrentStr = CurrentValueStr();
 			EnergyStr = EnergyValueStr();
-			CurrentScaled = CurrentStr.toFloat();
-			FormatRange = SearchFormatRange(CurrentScaled);
-			CurrentScaled *= TabFormat[FormatRange].FormatFactor;
-			CurrentStr = String(CurrentScaled);
-			CurrentStr += " " + TabFormat[FormatRange].Prefix + "A";
+			if(!CurrentOrPower)
+			{
+				CurrentStr = CurrentValueStr();
+				CurrentScaled = CurrentStr.toFloat();
+				FormatRange = SearchFormatRange(CurrentScaled);
+				CurrentScaled *= TabFormat[FormatRange].FormatFactor;
+				CurrentStr = String(CurrentScaled);
+				CurrentStr += " " + TabFormat[FormatRange].Prefix + "A";
+			}
+			else
+			{
+				PowerStr = PowerValueStr();
+				PowerScaled = PowerStr.toFloat();						
+				FormatRange = SearchFormatRange(PowerScaled);
+				PowerScaled *= TabFormat[FormatRange].FormatFactor;
+				PowerStr = String(PowerScaled);
+				PowerStr += " " + TabFormat[FormatRange].Prefix + "W";		
+			}
+
 			switch(UdmEnergy)
 			{
 				case WATT_MINUTO:
@@ -927,7 +946,10 @@ bool ShowMeasures()
 					break;
 			}
 			EnergyStr +=  " " + TabFormat[FormatRange].Prefix + UdmEnergyScale[UdmEnergy].UdmStr;
-			LCDPrintString(TWO, CENTER_ALIGN, CurrentStr);
+			if(!CurrentOrPower)
+				LCDPrintString(TWO, CENTER_ALIGN, CurrentStr);
+			else
+				LCDPrintString(TWO, CENTER_ALIGN, PowerStr);
 			LCDPrintString(FOUR, CENTER_ALIGN, EnergyStr);
 		}
 		ButtonPress = CheckButtons();
@@ -967,6 +989,15 @@ bool ShowMeasures()
 		{
 			TimerRefreshMeasure = TIMER_REFRESH_MEASURE;
 		}
+		TimerCurrentPower--;
+		if(TimerCurrentPower == 0)
+		{
+			TimerCurrentPower = 1500;
+			if(CurrentOrPower)
+				CurrentOrPower = false;
+			else
+				CurrentOrPower = true;			
+		}
 		delay(10);
 	}
 	return true;
@@ -975,7 +1006,7 @@ bool ShowMeasures()
 bool WiFiInfo()
 {
 	bool ExitWifiInfo = false;
-	short ButtonPress = 0;
+	uint8_t ButtonPress = 0;
 	short WifiItemSsid = 0;
 	short RefreshSignal = 150;
 	ClearLCD();
@@ -1042,7 +1073,7 @@ bool WiFiInfo()
 
 bool AssignReleTimer()
 {
-	short ButtonPress, ReleNumber = RELE_1, TimerAssignedCnt = 0;
+	uint8_t ButtonPress, ReleNumber = RELE_1, TimerAssignedCnt = 0;
 	bool ExitAssignReleTimer = false;
 	ClearLCD();
 	CheckEvents();
@@ -1174,7 +1205,7 @@ bool AssignReleTimer()
 
 bool ChangeTimerDisplay()
 {
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	short DelayItem = ALWAYS_ON;
 	bool ExitchangeDelay = false;
 	ClearLCD();
@@ -1236,7 +1267,7 @@ bool TurnOffWifi()
 bool ChangeUdmEnergy()
 {
 	bool ExitChangeUdm = false;
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	short UdmEnergyItem, OldUdmEnergyItem;
 	ReadMemory(UDM_ENERGY_ADDR, 1, &UdmEnergyItem);
 	OldUdmEnergyItem = UdmEnergyItem;
@@ -1300,7 +1331,7 @@ bool CheckYesNo()
 {
 	bool Exit = false, Choice = false;
 	String YesNo[] = {"Si", "No"};
-	short ButtonPress = NO_PRESS;
+	uint8_t ButtonPress = NO_PRESS;
 	short YesNoChoice = NO;
 	while(!Exit)
 	{

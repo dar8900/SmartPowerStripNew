@@ -277,7 +277,7 @@ void ShowReleIcons(short Row)
 
 bool SetTimerRele(short ReleNbr)
 {
-	short ButtonPress, Cursor = 0;
+	uint8_t ButtonPress, Cursor = 0;
 	bool ExitSetTimer = false;
 	TIME_DATE_FORMAT SetTimer;
 	short Hour = 0, Minute_1 = 0, Minute_2 = 0;
