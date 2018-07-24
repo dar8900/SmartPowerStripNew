@@ -7,7 +7,7 @@
 short ButtonPress = NO_PRESS;
 short TickSecond = 0;
 short WichData = NO_DATA;
-// uint32_t TimeExec;
+uint32_t TimeExec;
 
 extern String		EnergyStr;
 extern String		CurrentStr;
@@ -49,31 +49,7 @@ static void WichInfo()
 	{
    		WichData = Wire.read();
 	}
-	switch(WichData)
-	{
-		case RELE_1_OFF:
-		case RELE_2_OFF:
-		case RELE_3_OFF:
-		case RELE_4_OFF:
-		case RELE_5_OFF:
-		case RELE_6_OFF:
-		case RELE_7_OFF:
-		case RELE_8_OFF:
-			ReleOff(WichData);
-			break;
-		case RELE_1_ON:		
-		case RELE_2_ON:		
-		case RELE_3_ON:		
-		case RELE_4_ON:		
-		case RELE_5_ON:		
-		case RELE_6_ON:		
-		case RELE_7_ON:		
-		case RELE_8_ON:	
-			ReleOn(WichData);
-			break;		
-		default:
-			break;
-	}
+	ReleAction(WichData);
 }
 
 static void SendInfo()
@@ -91,7 +67,7 @@ static void SendInfo()
 			Wire.write(CurrentStr.c_str());
 			break;
 		case POWER:
-			Wire.write(CurrentStr.c_str());
+			Wire.write(PowerStr.c_str());
 			break;
 		default:
 			break;
@@ -128,10 +104,12 @@ void setup()
 
 void loop() 
 {
+	TimeExec = millis();
 	ChekButtons();
 	CalcEnergy();
 	TickSecond++;
-	if(TickSecond == (1000 / MAIN_DELAY))
+	TimeExec = millis() - TimeExec;
+	if(TickSecond == (1000 / TimeExec))
 	{
 		TickSecond = 0;
 		MeasureValueSec();	
