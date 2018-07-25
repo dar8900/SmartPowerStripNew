@@ -39,7 +39,7 @@ void LCDShowPopUp(String Avviso)
 	ClearLCD();
 	LCDPrintString(THREE, CENTER_ALIGN, Avviso);
 	BlinkDisplay(4, 300);
-	delay(1000);
+	delay(500);
 	ClearLCD();
 }
 

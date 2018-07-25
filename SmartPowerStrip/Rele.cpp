@@ -134,20 +134,27 @@ void SaveReleStatus(short ReleIndx, short Status)
 bool ReleInit(bool FirstGo)
 {
 	short ReleIndx;
+	bool Toggle = true;
 	ClearLCD();
 	LCDPrintString(TWO, CENTER_ALIGN, "Effettuare test");
 	LCDPrintString(THREE, CENTER_ALIGN, "diagnostico?");
 	if(CheckYesNo())
 	{
 		ClearLCD();
-		LCDPrintString(ONE, CENTER_ALIGN, "Test in corso");
-		LCDPrintString(TWO, CENTER_ALIGN, "attendere...");
 		TurnOffAllRele();
-		ShowReleIcons(THREE);
-		delay(1000);
 		Flag.AllReleDown = false;
 		for(ReleIndx = RELE_1; ReleIndx < RELE_MAX; ReleIndx++)
 		{
+			if(Toggle)
+			{
+				LCDPrintString(ONE, CENTER_ALIGN, "Test in corso");
+				LCDPrintString(TWO, CENTER_ALIGN, "attendere...");
+			}
+			else
+			{
+				ClearLCDLine(ONE);
+				ClearLCDLine(TWO);
+			}
 			ON(ReleIdx2Pin(ReleIndx));
 			ReleOn(ReleIndx);
 			Rele[ReleIndx].IsActive = true;
@@ -158,6 +165,7 @@ bool ReleInit(bool FirstGo)
 			Rele[ReleIndx].IsActive = false;
 			ShowReleIcons(THREE);
 			delay(500);
+			Toggle = !Toggle;
 		}
 	}
 

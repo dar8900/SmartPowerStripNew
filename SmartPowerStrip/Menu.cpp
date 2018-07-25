@@ -128,12 +128,21 @@ void MainScreen(short EnterSetup)
 	CheckReleStatus();
 	CheckEvents();
 	short RefreshDelayItem;
+	uint8_t GeneralCnt = 0;
+	bool Toggle = true;
 	Flag.InBand = CheckBand();
 	if(Flag.InBand)
 	{
 		ClearLCD();
-		LCDPrintString(TWO, CENTER_ALIGN, "Banda in attivazione");
-		delay(DELAY_INFO_MSG);
+		for(GeneralCnt = 0; GeneralCnt < 3; GeneralCnt++)
+		{
+			if(Toggle)
+				LCDPrintString(TWO, CENTER_ALIGN, "Banda in attivazione");
+			else
+				ClearLCDLine(TWO);
+			Toggle = !Toggle;
+			delay(400);
+		}
 		ClearLCD();
 		while(CheckBand())
 		{
@@ -169,8 +178,15 @@ void MainScreen(short EnterSetup)
 		{
 			LCDDisplayOn();
 			Flag.IsDisplayOn = true;
-			LCDPrintString(TWO, CENTER_ALIGN, "Uscita dalla banda");
-			delay(DELAY_INFO_MSG);
+			for(GeneralCnt = 0; GeneralCnt < 3; GeneralCnt++)
+			{
+				if(Toggle)
+					LCDPrintString(TWO, CENTER_ALIGN, "Uscita dalla banda");
+				else
+					ClearLCDLine(TWO);
+				Toggle = !Toggle;
+				delay(400);
+			}
 			ClearLCD();
 			BandInit();
 			ReleReStart();
