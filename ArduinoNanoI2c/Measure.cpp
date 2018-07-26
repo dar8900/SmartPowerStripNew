@@ -4,18 +4,36 @@
 const float TensioneLinea  = 230.0;
 const float mVoltPerAmpere = 100.0;
 
+float 			  CurrentOffset;
+
 float 			  CurrentCalculated;
 float 		      EnergyMeasured;
 static float      EnergyAcc;
-static uint16_t   EnergyAccCnt;
+static uint16_t   EnergyAccCnt = 1;
 float   	      PowerMeasure;
 
 String		      EnergyStr;
 String		      CurrentStr;
 String 			  PowerStr;
 
+float CalcCurrentOffset()
+{
+	float mVolt = 0.0, Current = 0.0;
+	uint32_t CurrentAcc = 0;
+	uint16_t ReadedValue = 0, AdcOffset = ZERO_CURRENT_ANALOG_VALUE;
+	
+	for(int cnt = 0; cnt < (N_CAMPIONI_CORRENTE / 2); cnt++) // legge per 50 ms (10 periodi di rete a 50 Hz)
+	{	
+		ReadedValue = (analogRead(A0) - AdcOffset);
+		CurrentAcc += (uint32_t)(ReadedValue * ReadedValue);		
+	}
+	mVolt = (sqrt((float)(CurrentAcc / N_CAMPIONI_CORRENTE))) * 4.9;
+	Current = (mVolt / mVoltPerAmpere); // Valore RMS in Ampere
+	return Current;
+}
 
-static float CalcCurrent()
+
+float CalcCurrent()
 {
 	float mVolt = 0.0, Current = 0.0;
 	uint32_t CurrentAcc = 0;
@@ -33,16 +51,27 @@ static float CalcCurrent()
 
 void CalcEnergy() // 200ms ca
 {
-	CurrentCalculated = CalcCurrent();
-	PowerMeasure = CurrentCalculated * (float)TENSIONE_LINEA;
-	EnergyAcc += PowerMeasure;
-	EnergyAccCnt++;
+	if(CurrentOffset < 0)
+		CurrentOffset *= -1.0;
+	CurrentCalculated = CalcCurrent() - CurrentOffset;
+	Serial.println(CurrentCalculated);
+	if(CurrentCalculated > 0.0)
+	{
+		PowerMeasure = CurrentCalculated * (float)TENSIONE_LINEA;
+		EnergyAcc += PowerMeasure;
+		EnergyAccCnt++;
+	}
+	else
+	{
+		PowerMeasure = 0.0;
+		
+	}
 }
 
 void MeasureValueSec()
 {
 	EnergyMeasured += (EnergyAcc / (float)EnergyAccCnt);	
-	EnergyAccCnt = 0;
+	EnergyAccCnt = 1;
 	EnergyAcc = 0.0;
 	EnergyStr = String(EnergyMeasured); // Invio la stringa formattata in W/s
 	CurrentStr = String(CurrentCalculated);

@@ -9,6 +9,7 @@ short TickSecond = 0;
 short WichData = NO_DATA;
 uint32_t TimeExec;
 
+extern float        CurrentOffset;
 extern String		EnergyStr;
 extern String		CurrentStr;
 extern String       PowerStr;
@@ -100,6 +101,7 @@ void setup()
 	pinMode(RELE_8, OUTPUT);
 	Wire.onReceive(WichInfo);
 	Wire.onRequest(SendInfo);
+	CurrentOffset = CalcCurrent();
 }
 
 void loop() 
@@ -113,6 +115,7 @@ void loop()
 	{
 		TickSecond = 0;
 		MeasureValueSec();	
+		CurrentOffset = CalcCurrentOffset();
 	}	
 	
 }

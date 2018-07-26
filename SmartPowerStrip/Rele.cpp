@@ -141,7 +141,10 @@ bool ReleInit(bool FirstGo)
 	if(CheckYesNo())
 	{
 		ClearLCD();
+		LCDPrintString(ONE, CENTER_ALIGN, "Test in corso");
+		LCDPrintString(TWO, CENTER_ALIGN, "attendere...");
 		TurnOffAllRele();
+		ClearLCD();
 		Flag.AllReleDown = false;
 		for(ReleIndx = RELE_1; ReleIndx < RELE_MAX; ReleIndx++)
 		{

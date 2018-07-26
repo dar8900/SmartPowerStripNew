@@ -83,7 +83,7 @@ static const String ONOFF[] = {"Off", "On"};
 
 static uint8_t SearchFormatRange(float ValueToFormat)
 {
-	uint8_t TabLenght = 13;
+	uint8_t TabLenght = 14;
 	uint8_t Range = 0;
 	for(Range = 0; Range < TabLenght; Range++)
 	{
@@ -93,6 +93,12 @@ static uint8_t SearchFormatRange(float ValueToFormat)
 		{
 			break;
 		}
+		else if(ValueToFormat == 0.0)
+		{
+			Range = 3;
+			break;
+		}
+			
 	}
 	return Range;
 }
@@ -922,7 +928,7 @@ bool HelpInfo()
 bool ShowMeasures()
 {
 	uint16_t TimerDisplay = 3000; // 60s con delay 10ms
-	uint16_t TimerCurrentPower = 1500; // Cambio ogno 30s con delay 10ms tra corrente e potenza
+	uint16_t TimerCurrentPower = 500; // Cambio ogno 30s con delay 10ms tra corrente e potenza
 	uint8_t FormatRange = 0;
 	short TimerRefreshMeasure = TIMER_REFRESH_MEASURE; 
 	uint8_t ButtonPress = NO_PRESS;
@@ -1042,11 +1048,9 @@ bool ShowMeasures()
 		TimerCurrentPower--;
 		if(TimerCurrentPower == 0)
 		{
-			TimerCurrentPower = 1500;
-			if(CurrentOrPower)
-				CurrentOrPower = false;
-			else
-				CurrentOrPower = true;			
+			ClearLCDLine(ONE);
+			TimerCurrentPower = 500;
+			CurrentOrPower = !CurrentOrPower;		
 		}
 		delay(10);
 	}

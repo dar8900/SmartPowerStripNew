@@ -8,5 +8,7 @@
 #define 	N_CAMPIONI_CORRENTE	2000
 #define 	N_CAMPIONI_ENERGIA	40
 
+float CalcCurrent(void);
+float CalcCurrentOffset(void);
 void CalcEnergy(void);
 void MeasureValueSec(void);
