@@ -57,8 +57,8 @@ const DELAY_TIMER_S TimerDalays[]
 const UDM_ENERGY_MENU UdmEnergyScale[MAX_UDM_ITEM] = 
 {
 	{3600.0,    "Wh" },
-	{60.0  ,   "Wm" },
-	{1.0  , "Ws" },	
+	{60.0  ,    "Wm" },
+	{1.0   ,    "Ws" },	
 };
 
 const FORMAT_ENERGY TabFormat[] = 
@@ -83,7 +83,7 @@ static const String ONOFF[] = {"Off", "On"};
 
 static uint8_t SearchFormatRange(float ValueToFormat)
 {
-	uint8_t TabLenght = 14;
+	uint8_t TabLenght = 13;
 	uint8_t Range = 0;
 	for(Range = 0; Range < TabLenght; Range++)
 	{
@@ -93,7 +93,7 @@ static uint8_t SearchFormatRange(float ValueToFormat)
 		{
 			break;
 		}
-		else if(ValueToFormat >= 0.0 && ValueToFormat < TabFormat[0])
+		else if(ValueToFormat >= 0.0 && ValueToFormat < TabFormat[0].RangeValue)
 		{
 			Range = 3;
 			break;
@@ -754,7 +754,7 @@ bool WifiConnect()
 static bool BackPressed()
 {
 	uint8_t ButtonPress = NO_PRESS;
-	short TimerPressing = 50; // 0.5 sec
+	uint8_t TimerPressing = 50; // 0.5 sec
 	bool Pressed = false;
 	while(TimerPressing > 0)
 	{
@@ -773,7 +773,7 @@ static bool BackPressed()
 
 bool HelpInfo()
 {
-	short NumTimer = 0, ReleIndx = 0, ReleTimer[2];
+	uint8_t NumTimer = 0, ReleIndx = 0, ReleTimer[2];
 	String BandTime1, BandTime2, Hour, Minute, Day, Second, TotalTime;
 	bool NoTimer = true;
 	CheckEvents();
@@ -927,18 +927,19 @@ bool HelpInfo()
 bool ShowMeasures()
 {
 	uint16_t TimerDisplay = 3000; // 60s con delay 10ms
-	uint16_t TimerCurrentPower = 0, TimeExecShowMeasure = 0; // Cambio ogno 10s
+	uint16_t TimerSwitchMeasure = 0, TimeExecShowMeasure = 0; // Cambio ogni 10s
 	uint8_t FormatRange = 0;
-	short TimerRefreshMeasure = TIMER_REFRESH_MEASURE; 
+	uint8_t TimerRefreshMeasure = TIMER_REFRESH_MEASURE; 
 	uint8_t ButtonPress = NO_PRESS;
 	short UdmEnergy = 0;
 	String EnergyStr;
 	String CurrentStr;
 	String PowerStr;
 	float EnergyScaled = 0.0;
+	float EuroValue = 0.0;
 	float CurrentScaled = 0.0;
 	float PowerScaled = 0.0;
-	bool ExitShowEnergy = false, FormatEnergy = false, CurrentOrPower = false;
+	bool ExitShowEnergy = false, FormatEnergy = false, CurrentOrPower = false, EnergyOrEuro = true;
 	ReadMemory(UDM_ENERGY_ADDR, 1, &UdmEnergy);
 	ClearLCD();
 	if(!Flag.IsDisplayOn)
@@ -953,7 +954,10 @@ bool ShowMeasures()
 			LCDPrintString(ONE, CENTER_ALIGN, "Corrente Misurata:");
 		else
 			LCDPrintString(ONE, CENTER_ALIGN, "Potenza Misurata:");
-		LCDPrintString(THREE, CENTER_ALIGN, "Energia Misurata:");
+		if(!EnergyOrEuro)
+			LCDPrintString(THREE, CENTER_ALIGN, "Euro spesi:");
+		else
+			LCDPrintString(THREE, CENTER_ALIGN, "Energia Misurata:");
 		if(TimerRefreshMeasure == TIMER_REFRESH_MEASURE)
 		{
 			ClearLCDLine(TWO);
@@ -977,31 +981,38 @@ bool ShowMeasures()
 				PowerStr = String(PowerScaled);
 				PowerStr += " " + TabFormat[FormatRange].Prefix + "W";		
 			}
-
-			switch(UdmEnergy)
+			if(!EnergyOrEuro)
 			{
-				case WATT_MINUTO:
-					EnergyScaled = ((EnergyStr.toFloat()) / UdmEnergyScale[UdmEnergy].UdmValue);
-					FormatRange = SearchFormatRange(EnergyScaled);
-					EnergyScaled *= TabFormat[FormatRange].FormatFactor;
-					EnergyStr = String(EnergyScaled);
-					break;
-				case WATT_SECONDO:
-					EnergyScaled = ((EnergyStr.toFloat()) / UdmEnergyScale[UdmEnergy].UdmValue);
-					FormatRange = SearchFormatRange(EnergyScaled);
-					EnergyScaled *= TabFormat[FormatRange].FormatFactor;
-					EnergyStr = String(EnergyScaled);
-					break;
-				case WATT_ORA:
-					EnergyScaled = ((EnergyStr.toFloat()) / UdmEnergyScale[UdmEnergy].UdmValue);
-					FormatRange = SearchFormatRange(EnergyScaled);
-					EnergyScaled *= TabFormat[FormatRange].FormatFactor;
-					EnergyStr = String(EnergyScaled);
-					break;
-				default:
-					break;
+				EuroValue = ((EnergyStr.toFloat()) / 3600.0) * TARIFFA;
+				EnergyStr = String(EuroValue) + "Euro";
 			}
-			EnergyStr +=  " " + TabFormat[FormatRange].Prefix + UdmEnergyScale[UdmEnergy].UdmStr;
+			else
+			{
+				switch(UdmEnergy)
+				{
+					case WATT_MINUTO:
+						EnergyScaled = ((EnergyStr.toFloat()) / UdmEnergyScale[UdmEnergy].UdmValue);
+						FormatRange = SearchFormatRange(EnergyScaled);
+						EnergyScaled *= TabFormat[FormatRange].FormatFactor;
+						EnergyStr = String(EnergyScaled);
+						break;
+					case WATT_SECONDO:
+						EnergyScaled = ((EnergyStr.toFloat()) / UdmEnergyScale[UdmEnergy].UdmValue);
+						FormatRange = SearchFormatRange(EnergyScaled);
+						EnergyScaled *= TabFormat[FormatRange].FormatFactor;
+						EnergyStr = String(EnergyScaled);
+						break;
+					case WATT_ORA:
+						EnergyScaled = ((EnergyStr.toFloat()) / UdmEnergyScale[UdmEnergy].UdmValue);
+						FormatRange = SearchFormatRange(EnergyScaled);
+						EnergyScaled *= TabFormat[FormatRange].FormatFactor;
+						EnergyStr = String(EnergyScaled);
+						break;
+					default:
+						break;
+				}
+				EnergyStr +=  " " + TabFormat[FormatRange].Prefix + UdmEnergyScale[UdmEnergy].UdmStr;
+			}
 			if(!CurrentOrPower)
 				LCDPrintString(TWO, CENTER_ALIGN, CurrentStr);
 			else
@@ -1046,13 +1057,15 @@ bool ShowMeasures()
 			TimerRefreshMeasure = TIMER_REFRESH_MEASURE;
 		}
 		delay(10);
-		TimerCurrentPower++;
+		TimerSwitchMeasure++;
 		TimeExecShowMeasure = millis() - TimeExecShowMeasure;
-		if(TimerCurrentPower == (10000 / TimeExecShowMeasure))
+		if(TimerSwitchMeasure == (10000 / TimeExecShowMeasure))
 		{
 			ClearLCDLine(ONE);
-			TimerCurrentPower = 500;
-			CurrentOrPower = !CurrentOrPower;		
+			ClearLCDLine(THREE);
+			TimerSwitchMeasure = 0;
+			CurrentOrPower = !CurrentOrPower;
+			EnergyOrEuro = !EnergyOrEuro;
 		}
 	}
 	return true;

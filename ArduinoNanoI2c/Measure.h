@@ -8,6 +8,7 @@
 #define 	N_CAMPIONI_CORRENTE	2000
 #define 	N_CAMPIONI_ENERGIA	40
 
+
 float CalcCurrent(void);
 void CurrentCalibration(void);
 void CalcEnergy(void);
