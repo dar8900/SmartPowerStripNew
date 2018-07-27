@@ -4,7 +4,7 @@
 const float TensioneLinea  = 230.0;
 const float mVoltPerAmpere = 100.0;
 
-float 			  CurrentOffset;
+static float 			  CurrentOffset;
 
 float 			  CurrentCalculated;
 float 		      EnergyMeasured;
@@ -16,20 +16,20 @@ String		      EnergyStr;
 String		      CurrentStr;
 String 			  PowerStr;
 
-float CalcCurrentOffset()
+void CurrentCalibration()
 {
 	float mVolt = 0.0, Current = 0.0;
 	uint32_t CurrentAcc = 0;
-	uint16_t ReadedValue = 0, AdcOffset = ZERO_CURRENT_ANALOG_VALUE;
+	uint16_t ReadedValue = 0, AdcOffset = ZERO_CURRENT_ANALOG_VALUE, NumSampleCal = (N_CAMPIONI_CORRENTE / 4);
 	
-	for(int cnt = 0; cnt < (N_CAMPIONI_CORRENTE / 2); cnt++) // legge per 50 ms (10 periodi di rete a 50 Hz)
+	for(int cnt = 0; cnt < NumSampleCal; cnt++) // legge per 50 ms
 	{	
 		ReadedValue = (analogRead(A0) - AdcOffset);
 		CurrentAcc += (uint32_t)(ReadedValue * ReadedValue);		
 	}
-	mVolt = (sqrt((float)(CurrentAcc / N_CAMPIONI_CORRENTE))) * 4.9;
-	Current = (mVolt / mVoltPerAmpere); // Valore RMS in Ampere
-	return Current;
+	mVolt = (sqrt((float)(CurrentAcc / NumSampleCal))) * 4.9;
+	CurrentOffset = (mVolt / mVoltPerAmpere); // Valore RMS in Ampere
+	return;
 }
 
 
@@ -52,7 +52,7 @@ float CalcCurrent()
 void CalcEnergy() // 200ms ca
 {
 	if(CurrentOffset < 0)
-		CurrentOffset *= -1.0;
+		CurrentOffset = -CurrentOffset;
 	CurrentCalculated = CalcCurrent() - CurrentOffset;
 	Serial.println(CurrentCalculated);
 	if(CurrentCalculated > 0.0)

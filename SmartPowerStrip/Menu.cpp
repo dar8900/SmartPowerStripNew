@@ -93,12 +93,11 @@ static uint8_t SearchFormatRange(float ValueToFormat)
 		{
 			break;
 		}
-		else if(ValueToFormat == 0.0)
+		else if(ValueToFormat >= 0.0 && ValueToFormat < TabFormat[0])
 		{
 			Range = 3;
 			break;
-		}
-			
+		}		
 	}
 	return Range;
 }
@@ -904,9 +903,9 @@ bool HelpInfo()
 			break;
 		ClearLCD();
 		CheckEvents();
-		LCDPrintString(ONE, CENTER_ALIGN, "Firmware version:");
+		LCDPrintString(ONE, CENTER_ALIGN, "Versione Firmware:");
 		LCDPrintString(TWO, CENTER_ALIGN, VersionValue);
-		LCDPrintString(THREE, CENTER_ALIGN, "Release Date:");
+		LCDPrintString(THREE, CENTER_ALIGN, "Data rilascio:");
 		LCDPrintString(FOUR, CENTER_ALIGN, VersionDate);
 		if(BackPressed())
 			break;
@@ -928,7 +927,7 @@ bool HelpInfo()
 bool ShowMeasures()
 {
 	uint16_t TimerDisplay = 3000; // 60s con delay 10ms
-	uint16_t TimerCurrentPower = 500; // Cambio ogno 30s con delay 10ms tra corrente e potenza
+	uint16_t TimerCurrentPower = 0, TimeExecShowMeasure = 0; // Cambio ogno 10s
 	uint8_t FormatRange = 0;
 	short TimerRefreshMeasure = TIMER_REFRESH_MEASURE; 
 	uint8_t ButtonPress = NO_PRESS;
@@ -949,6 +948,7 @@ bool ShowMeasures()
 	}
 	while(!ExitShowEnergy)
 	{
+		TimeExecShowMeasure = millis();
 		if(!CurrentOrPower)
 			LCDPrintString(ONE, CENTER_ALIGN, "Corrente Misurata:");
 		else
@@ -1045,14 +1045,15 @@ bool ShowMeasures()
 		{
 			TimerRefreshMeasure = TIMER_REFRESH_MEASURE;
 		}
-		TimerCurrentPower--;
-		if(TimerCurrentPower == 0)
+		delay(10);
+		TimerCurrentPower++;
+		TimeExecShowMeasure = millis() - TimeExecShowMeasure;
+		if(TimerCurrentPower == (10000 / TimeExecShowMeasure))
 		{
 			ClearLCDLine(ONE);
 			TimerCurrentPower = 500;
 			CurrentOrPower = !CurrentOrPower;		
 		}
-		delay(10);
 	}
 	return true;
 }

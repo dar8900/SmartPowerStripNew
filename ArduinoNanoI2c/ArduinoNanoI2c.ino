@@ -5,11 +5,10 @@
 
 
 short ButtonPress = NO_PRESS;
-short TickSecond = 0;
+short TickSecond = 0, Tick5Second = 0;
 short WichData = NO_DATA;
-uint32_t TimeExec;
+uint16_t TimeExecEnergy, TimeExec4Calib;
 
-extern float        CurrentOffset;
 extern String		EnergyStr;
 extern String		CurrentStr;
 extern String       PowerStr;
@@ -101,21 +100,30 @@ void setup()
 	pinMode(RELE_8, OUTPUT);
 	Wire.onReceive(WichInfo);
 	Wire.onRequest(SendInfo);
-	CurrentOffset = CalcCurrent();
+	CurrentCalibration();
 }
 
 void loop() 
 {
-	TimeExec = millis();
+	TimeExec4Calib = millis();
+	TimeExecEnergy = millis();
 	ChekButtons();
 	CalcEnergy();
 	TickSecond++;
-	TimeExec = millis() - TimeExec;
-	if(TickSecond == (1000 / TimeExec))
+	TimeExecEnergy = millis() - TimeExecEnergy;
+	
+	// Viene misurata l'energia in Ws ogni sec e scritta nella stringa
+	if(TickSecond == (SECOND(1) / TimeExecEnergy))
 	{
 		TickSecond = 0;
 		MeasureValueSec();	
-		CurrentOffset = CalcCurrentOffset();
 	}	
+	Tick5Second++;
+	TimeExec4Calib = millis() - TimeExec4Calib;
 	
+	// Viene eseguita una calibrazione della corrente ogni 5s
+	if(Tick5Second == (SECOND(5) / TimeExec4Calib))
+	{
+		CurrentCalibration();
+	}
 }

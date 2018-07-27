@@ -9,6 +9,6 @@
 #define 	N_CAMPIONI_ENERGIA	40
 
 float CalcCurrent(void);
-float CalcCurrentOffset(void);
+void CurrentCalibration(void);
 void CalcEnergy(void);
 void MeasureValueSec(void);
