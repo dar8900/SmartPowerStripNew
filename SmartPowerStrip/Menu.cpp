@@ -251,6 +251,7 @@ void MainMenu()
 	bool ExitMainMenu = false;
 	bool ReEnterMenu = false;
 	uint8_t ButtonPress = 0, Item = MANUAL_RELE;
+	uint16_t TimerBackLightMenu = 0, TimeExecMainMenu = 0;
 	ClearLCD();
 	LCDPrintString(ONE  , CENTER_ALIGN, "Premere Up o Down");
 	LCDPrintString(TWO  , CENTER_ALIGN, "per scegliere");
@@ -265,6 +266,7 @@ void MainMenu()
 	ClearLCD();
 	while(!ExitMainMenu)
 	{
+		TimeExecMainMenu = millis();
 		if(ReEnterMenu)
 		{
 			ClearLCD();
@@ -316,6 +318,12 @@ void MainMenu()
 				{
 					Item = MAX_MENU_ITEM - 1;
 				}
+				TimerBackLightMenu = 0;
+				if(!Flag.IsDisplayOn)
+				{
+					Flag.IsDisplayOn = true;
+					LCDDisplayOn();
+				}
 				ClearLCDLine(THREE);
 				break;
 			case BUTTON_DOWN:
@@ -328,14 +336,32 @@ void MainMenu()
 				{
 					Item = MANUAL_RELE;
 				}
+				TimerBackLightMenu = 0;
+				if(!Flag.IsDisplayOn)
+				{
+					Flag.IsDisplayOn = true;
+					LCDDisplayOn();
+				}
 				ClearLCDLine(THREE);
 				break;
 			case BUTTON_SET:
 				BlinkLed(BUTTON_LED);
+				TimerBackLightMenu = 0;
+				if(!Flag.IsDisplayOn)
+				{
+					Flag.IsDisplayOn = true;
+					LCDDisplayOn();
+				}
 				ReEnterMenu = true;
 				break;
 			case BUTTON_LEFT:
 				BlinkLed(BUTTON_LED);
+				TimerBackLightMenu = 0;
+				if(!Flag.IsDisplayOn)
+				{
+					Flag.IsDisplayOn = true;
+					LCDDisplayOn();
+				}
 				ExitMainMenu = true;
 				break;
 			default:
@@ -343,6 +369,17 @@ void MainMenu()
 		}
 		ButtonPress = NO_PRESS;
 		delay(WHILE_LOOP_DELAY);
+		if(Flag.IsDisplayOn)
+			TimerBackLightMenu++;
+		TimeExecMainMenu = millis() - TimeExecMainMenu;
+		if(TimerBackLightMenu == (15000 / TimeExecMainMenu)
+		{
+			if(Flag.IsDisplayOn)
+			{
+				Flag.IsDisplayOn = false;
+				LCDDisplayOff();
+			}
+		}
 		if(ReEnterMenu)
 		{
 			MainMenuItems[Item].MenuFunc();
