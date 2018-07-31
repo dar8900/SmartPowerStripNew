@@ -18,13 +18,13 @@ typedef enum
 {
 	BUTTON = 0,
 	ENERGY,
-	CURRENT,
-	POWER
+	CURRENT
+	// POWER
 }I2C_WRITE_READ;
 
 typedef enum
 {
-	RELE_1_OFF = 4,
+	RELE_1_OFF = 3,
 	RELE_2_OFF,
 	RELE_3_OFF,
 	RELE_4_OFF,
@@ -39,19 +39,17 @@ typedef enum
 	RELE_5_ON,
 	RELE_6_ON,
 	RELE_7_ON,
-	RELE_8_ON // 19	
+	RELE_8_ON // 18	
 }SEND_RELE_STATUS;
 
 short CheckButtons(void);
 String EnergyValueStr(void);
 String CurrentValueStr(void);
-String PowerValueStr(void);
+// String PowerValueStr(void);
 String ReadMeasure(short WichInfo);
 void ReadButton(uint8_t *ButtonVal);
 
 void ReleOn(short ReleIdx);
 void ReleOff(short ReleIdx);
 
-// void ReadEnergy(String *EnergyStr);
-// void ReadCurrent(String *CurrentStr);
 #endif

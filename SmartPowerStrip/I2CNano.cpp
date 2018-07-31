@@ -23,10 +23,10 @@ String CurrentValueStr()
 	return ReadMeasure(CURRENT);
 }
 
-String PowerValueStr()
-{
-	return ReadMeasure(POWER);
-}
+// String PowerValueStr()
+// {
+	// return ReadMeasure(POWER);
+// }
 
 void ReadButton(uint8_t *ButtonVal)
 {

@@ -3,6 +3,7 @@
 #define MAIN_SCREEN_TIMER_DEFAULT	6000
 #define DELAY_CLIENT_CONNECTION 	  60
 #define 	TARIFFA			0.05135
+#define 	TENSIONE_LINEA	230.0
 
 typedef enum
 {

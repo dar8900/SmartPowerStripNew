@@ -4,9 +4,9 @@
 #include "ReleI2C.h"
 
 
-short ButtonPress = NO_PRESS;
-short TickSecond = 0, Tick5Second = 0;
-short WichData = NO_DATA;
+short    ButtonPress = NO_PRESS;
+short    TickSecond = 0, Tick5Second = 0;
+short    WichData = NO_DATA;
 uint16_t TimeExecEnergy, TimeExec4Calib;
 
 extern String		EnergyStr;
@@ -66,9 +66,9 @@ static void SendInfo()
 		case CURRENT:
 			Wire.write(CurrentStr.c_str());
 			break;
-		case POWER:
-			Wire.write(PowerStr.c_str());
-			break;
+		// case POWER:
+			// Wire.write(PowerStr.c_str());
+			// break;
 		default:
 			break;
 	}
@@ -105,7 +105,6 @@ void setup()
 
 void loop() 
 {
-	TimeExec4Calib = millis();
 	TimeExecEnergy = millis();
 	ChekButtons();
 	CalcEnergy();
@@ -118,12 +117,4 @@ void loop()
 		TickSecond = 0;
 		MeasureValueSec();	
 	}	
-	Tick5Second++;
-	TimeExec4Calib = millis() - TimeExec4Calib;
-	
-	// Viene eseguita una calibrazione della corrente ogni 5s
-	if(Tick5Second == (SECOND(5) / TimeExec4Calib))
-	{
-		CurrentCalibration();
-	}
 }

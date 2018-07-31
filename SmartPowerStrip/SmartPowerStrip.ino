@@ -163,6 +163,7 @@ void setup()
 	EepromInit();
 	LCDInit();
 	RTCInit();
+	LCDShowSplashScreen("Smart Power Strip", "HomeMicroTech");
 	WifiConfInit();
 	WifiInit();
 	if(Flag.WifiActive)

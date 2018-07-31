@@ -23,6 +23,7 @@ void LCDMoveCursor(short row, short col);
 void ClearLCD(void);
 void BlinkDisplay(short NumTimes);
 void LCDShowPopUp(String Avviso);
+void LCDShowSplashScreen(String Messaggio_1, String Messaggio_2);
 void LcdTimeWrite(int Time2Write);
 void LCDPrintString(short row, short col, String string);
 void LCDPrintValue(short row, short col, short value);

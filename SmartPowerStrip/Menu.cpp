@@ -372,7 +372,7 @@ void MainMenu()
 		if(Flag.IsDisplayOn)
 			TimerBackLightMenu++;
 		TimeExecMainMenu = millis() - TimeExecMainMenu;
-		if(TimerBackLightMenu == (15000 / TimeExecMainMenu)
+		if(TimerBackLightMenu == (15000 / TimeExecMainMenu))
 		{
 			if(Flag.IsDisplayOn)
 			{
@@ -999,10 +999,10 @@ bool ShowMeasures()
 		{
 			ClearLCDLine(TWO);
 			ClearLCDLine(FOUR);
+			CurrentStr = CurrentValueStr();
 			EnergyStr = EnergyValueStr();
 			if(!CurrentOrPower)
-			{
-				CurrentStr = CurrentValueStr();
+			{	
 				CurrentScaled = CurrentStr.toFloat();
 				FormatRange = SearchFormatRange(CurrentScaled);
 				CurrentScaled *= TabFormat[FormatRange].FormatFactor;
@@ -1011,8 +1011,7 @@ bool ShowMeasures()
 			}
 			else
 			{
-				PowerStr = PowerValueStr();
-				PowerScaled = PowerStr.toFloat();						
+				PowerScaled = CurrentStr.toFloat() * TENSIONE_LINEA;						
 				FormatRange = SearchFormatRange(PowerScaled);
 				PowerScaled *= TabFormat[FormatRange].FormatFactor;
 				PowerStr = String(PowerScaled);
