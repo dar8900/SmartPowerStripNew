@@ -49,7 +49,9 @@ typedef struct
 }FLAGS;
 
 
-bool IsRebooted(void);
+void RestartESP(void);
+void Reset2Factory(void);
+bool IsBackToDefault(void);
 void BlinkLed(short pin);
 void CheckEvents(void);
 void delayms(short ms);

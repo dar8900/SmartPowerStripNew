@@ -26,11 +26,11 @@ const MENU_VOICES MainMenuItems[]
 {
 	{ManualRele		,	"Gestione Manuale"	},
 	{ChangeTimeBand	,	"Cambio Banda"		},
+	{AssignReleTimer,	"Assegna Timer"		},
+	{ShowMeasures	,	"Misure"   		    },
 	{WifiConnect	,	"Connetti WiFi"		},
 	{HelpInfo		,	"Help e Info"		},
-	{ShowMeasures	,	"Misure"   		    },
 	{WiFiInfo		,	"Wifi Info"			},
-	{AssignReleTimer,	"Assegna Timer"		},
 	{Setup       	,	"Impostazioni"    	},
 };
 
@@ -40,9 +40,11 @@ const MENU_VOICES GeneralSetup[]
 	{ChangeTimerDisplay , "Timer display on"},
 	{TurnOffWifi        , "Spegni Wifi"     },
 	{ChangeUdmEnergy    , "UDM Energia"     },
+	{ResetEnergy        , "Reset Energia"   },
+	{ResetDefault       , "Reset Default"   },
+	{RestartEsp         , "Restart Ciabatta"},
 };
 
-// WiFi.mode(WIFI_OFF);
 
 const DELAY_TIMER_S TimerDalays[]
 {
@@ -425,7 +427,7 @@ bool Setup()
 				{
 					SetupItem = MAX_SETUP_ITEM - 1;
 				}
-				ClearLCD();
+				ClearLCDLine(THREE);
 				break;
 			case BUTTON_DOWN:
 				BlinkLed(BUTTON_LED);
@@ -437,7 +439,7 @@ bool Setup()
 				{
 					SetupItem = 0;
 				}
-				ClearLCD();
+				ClearLCDLine(THREE);
 				break;
 			case BUTTON_SET:
 				BlinkLed(BUTTON_LED);
@@ -1431,6 +1433,57 @@ bool ChangeUdmEnergy()
 	ClearLCD();
 }
 
+bool ResetEnergy()
+{
+	bool Reset = false, ConfirmReset = false;
+	ClearLCD();
+	LCDPrintString(TWO, CENTER_ALIGN, "Resettare il valore");
+	LCDPrintString(THREE, CENTER_ALIGN, "dell'energia?");
+	Reset = CheckYesNo();
+	if(Reset)
+		ConfirmReset = SendCommand(RESET_ENERGY);
+	if(ConfirmReset)
+	{
+		ClearLCD();
+		LCDPrintString(TWO, CENTER_ALIGN, "Resettata!");
+		delay(DELAY_INFO_MSG);
+		ClearLCD();
+	}
+	else
+	{
+		ClearLCD();
+		LCDPrintString(TWO, CENTER_ALIGN, "Non riuscito");
+		delay(DELAY_INFO_MSG);
+		ClearLCD();		
+	}
+	return true;
+}
+
+bool ResetDefault()
+{
+	bool Reset = false;
+	ClearLCD();
+	LCDPrintString(TWO, CENTER_ALIGN, "Impostare i valori");
+	LCDPrintString(THREE, CENTER_ALIGN, "di default?");
+	//Reset = CheckYesNo();
+	if(Reset)
+		Reset2Factory();
+	return true;
+}
+
+bool RestartEsp()
+{
+	bool Reset = false;
+	ClearLCD();
+	LCDPrintString(TWO, CENTER_ALIGN, "Eseguire il restart");
+	LCDPrintString(THREE, CENTER_ALIGN, "della ciabatta?");
+	//Reset = CheckYesNo();
+	if(Reset)
+		RestartESP();
+	return true;
+}
+
+
 bool CheckYesNo()
 {
 	bool Exit = false, Choice = false;
@@ -1474,6 +1527,8 @@ bool CheckYesNo()
 				}
 				break;
 			case BUTTON_LEFT:
+				Exit = true;
+				Choice = false;
 			default:
 				break;
 		}

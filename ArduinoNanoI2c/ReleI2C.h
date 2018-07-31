@@ -23,7 +23,7 @@ typedef enum
 	
 }RECEIVE_RELE_STATUS;
 
-void ReleAction(short WichRele);
+// void ReleAction(short WichRele);
 void ReleOn(short ReleIdx);
 void ReleOff(short ReleIdx);
 #endif

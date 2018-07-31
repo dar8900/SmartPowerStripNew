@@ -81,6 +81,26 @@ String ReadMeasure(short WichInfo)
 	return InfoStr;
 }
 
+bool SendCommand(uint8_t Command)
+{
+	String InfoStr;
+	bool Result = false;
+	uint8_t ReadInfo;
+	short TotChar = 0;
+	Wire.beginTransmission(ARDUINO_ADDR);
+	Wire.write(Command);
+	Wire.endTransmission();
+	delay(1);
+	Wire.requestFrom(ARDUINO_ADDR, 1);
+	while(Wire.available())
+	{
+   		ReadInfo = Wire.read();
+	}	
+	if(ReadInfo = DONE)
+		Result = true;
+	return Result;
+}
+
 void ReleOn(short ReleIdx)
 {
 	short Rele2Send = ReleIdx + RELE_1_ON;

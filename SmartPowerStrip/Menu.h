@@ -9,11 +9,11 @@ typedef enum
 {
 	MANUAL_RELE = 0,
 	CHANGE_TIME_BAND,
+	ASSIGN_RELE_TIMER,
+	SHOW_MEASURES,
 	WIFI_CONNECT,
 	HELP_INFO,
-	SHOW_ENERGY,
 	WIFI_INFO,
-	ASSIGN_RELE_TIMER,
 	SETUP,
 	MAX_MENU_ITEM
 }MENU_NUMBER;
@@ -24,6 +24,9 @@ typedef enum
 	 BACKLIGH_TIMER,
 	 TURN_OFF_WIFI,
 	 CHANGE_UDM_ENERGY,
+	 ENERGY_RESET,
+	 RESET_DEFAULT,
+	 RESTART_ESP,
 	 MAX_SETUP_ITEM
  }SETUP_NUMBER;
 
@@ -94,6 +97,9 @@ bool AssignReleTimer(void);
 bool ChangeTimerDisplay(void);
 bool TurnOffWifi(void);
 bool ChangeUdmEnergy(void);
+bool ResetEnergy(void);
+bool ResetDefault(void);
+bool RestartEsp(void);
 void ScreenTimerRefresh(void);
 
 #endif

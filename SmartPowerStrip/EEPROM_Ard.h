@@ -46,7 +46,7 @@ typedef enum
 
 #define FIRST_START_CHECK_ADDR			      100
 
-#define REBOOT_ADDR						      200
+#define FACTORY_RESET_ADDR					  200
 
 
 void EepromUpdate(short address, short value);

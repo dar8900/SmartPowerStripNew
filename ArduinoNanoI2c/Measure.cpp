@@ -84,3 +84,12 @@ void MeasureValueSec()
 	CurrentStr = String(CurrentCalculated);
 	PowerStr = String(PowerMeasure);
 }
+
+
+bool ResetEnergies()
+{
+	EnergyMeasured = 0.0;	
+	EnergyAccCnt = 0;
+	EnergyAcc = 0.0;
+	return true;
+}

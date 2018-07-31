@@ -118,29 +118,47 @@ void CheckEvents()
 		WifiScanForSignal();
 }
 
-void RebootESP()
+void RestartESP()
 {
-	WriteMemory(REBOOT_ADDR, 1);
+	ClearLCD();
+	LCDPrintString(TWO, CENTER_ALIGN, "Restart in corso");
+	LCDPrintString(THREE, CENTER_ALIGN, "attendere...");
+	delay(DELAY_MENU_MSG);
+	ClearLCD();
 	ESP.restart();
 }
 
-bool IsRebooted()
+
+void Reset2Factory()
 {
-	bool IsESPRebboted = false;
-	short RebootValue = 0;
-	ReadMemory(REBOOT_ADDR, 1, &RebootValue);
-	if(RebootValue == 1)
+	ClearLCD();
+	LCDPrintString(ONE, CENTER_ALIGN, "Reset a default");
+	LCDPrintString(TWO, CENTER_ALIGN, "in corso");
+	LCDPrintString(TWO, CENTER_ALIGN, "attendere...");
+	delay(DELAY_MENU_MSG);
+	ClearLCD();
+	WriteMemory(FACTORY_RESET_ADDR, 1);
+	ESP.restart();
+}
+
+bool IsBackToDefault()
+{
+	bool BackToDefault = false;
+	short ResetValue = 0;
+	ReadMemory(FACTORY_RESET_ADDR, 1, &ResetValue);
+	if(ResetValue == 1)
 	{
-		IsESPRebboted = true;
-		RebootValue = 0;
-		WriteMemory(REBOOT_ADDR, RebootValue);
+		BackToDefault = true;
+		ResetValue = 0;
+		WriteMemory(FACTORY_RESET_ADDR, ResetValue);
 	}
 	else
 	{
-		IsESPRebboted = false;
+		BackToDefault = false;
+		EepromUpdate(FACTORY_RESET_ADDR, 0);
 	}
 
-	return IsESPRebboted;
+	return BackToDefault;
 }
 
 void setup()
@@ -155,13 +173,12 @@ void setup()
 	pinMode(RELE6, OUTPUT);
 	pinMode(RELE7, OUTPUT);
 	pinMode(RELE8, OUTPUT);
-
 	pinMode(BUTTON_LED, OUTPUT);
-
 	short FirstStart = 0;
 	Wire.begin(SDA_PIN, SCL_PIN); // Inizializza I2C per NodeMCU
 	EepromInit();
 	LCDInit();
+	
 	RTCInit();
 	LCDShowSplashScreen("Smart Power Strip", "HomeMicroTech");
 	WifiConfInit();
@@ -210,13 +227,13 @@ void setup()
 	delay(1500);
 	ClearLCD();
 #else
-	Wire.begin(SDA, SCL);
+	Wire.begin(SDA_PIN, SCL_PIN);
 	EepromInit();
-	ClearMemory();
 	LCDInit();
+	ClearMemory();
 	if(IsMemoryEmpty())
 		LCDPrintString(TWO, CENTER_ALIGN, "Memoria Vuota");
-
+	RestartESP();
 #endif // FIRST_GO
 }
 

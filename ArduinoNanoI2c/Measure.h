@@ -13,3 +13,4 @@ float CalcCurrent(void);
 void CurrentCalibration(void);
 void CalcEnergy(void);
 void MeasureValueSec(void);
+bool ResetEnergies(void);

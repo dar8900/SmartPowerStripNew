@@ -4,6 +4,7 @@
 
 #define SECOND(sec)		(sec * 1000)
 
+#define NO_DATA	30
 
 typedef enum
 {
@@ -34,7 +35,19 @@ enum
 {
 	BUTTON = 0,
 	ENERGY,
-	CURRENT,
-	// POWER,
-	NO_DATA = 19
+	CURRENT
 };
+
+typedef enum
+{
+	RESET_ENERGY = 20,
+	MAX_COMMAND_LIST
+}COMMAND_LIST;
+
+typedef enum
+{
+	UNDONE = 0,
+	DONE
+}COMMAND_RESULT;
+
+short GetCommand(short Command);

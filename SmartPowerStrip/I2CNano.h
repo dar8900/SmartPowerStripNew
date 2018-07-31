@@ -42,11 +42,24 @@ typedef enum
 	RELE_8_ON // 18	
 }SEND_RELE_STATUS;
 
+typedef enum
+{
+	RESET_ENERGY = 20,
+	MAX_COMMAND_LIST
+}COMMAND_LIST;
+
+
+typedef enum
+{
+	UNDONE = 0,
+	DONE
+}COMMAND_RESULT;
+
 short CheckButtons(void);
 String EnergyValueStr(void);
 String CurrentValueStr(void);
-// String PowerValueStr(void);
 String ReadMeasure(short WichInfo);
+bool SendCommand(uint8_t Command);
 void ReadButton(uint8_t *ButtonVal);
 
 void ReleOn(short ReleIdx);

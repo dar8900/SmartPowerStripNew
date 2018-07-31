@@ -1,4 +1,5 @@
 #include <Wire.h>
+#include <stdint.h>
 #include "ArduinoNanoI2c.h"
 #include "Measure.h"
 #include "ReleI2C.h"
@@ -7,6 +8,7 @@
 short    ButtonPress = NO_PRESS;
 short    TickSecond = 0, Tick5Second = 0;
 short    WichData = NO_DATA;
+short  CommandResult = UNDONE;
 uint16_t TimeExecEnergy, TimeExec4Calib;
 
 extern String		EnergyStr;
@@ -43,13 +45,53 @@ static bool ChekButtons()
 	return Press;
 }
 
+short GetCommand(short Command)
+{
+	bool Result = false;
+	short CommandReturn = UNDONE;
+	switch(Command)
+	{
+		case RELE_1_OFF:
+		case RELE_2_OFF:
+		case RELE_3_OFF:
+		case RELE_4_OFF:
+		case RELE_5_OFF:
+		case RELE_6_OFF:
+		case RELE_7_OFF:
+		case RELE_8_OFF:
+			ReleOff(Command);
+			Result = true;
+			break;
+		case RELE_1_ON:		
+		case RELE_2_ON:		
+		case RELE_3_ON:		
+		case RELE_4_ON:		
+		case RELE_5_ON:		
+		case RELE_6_ON:		
+		case RELE_7_ON:		
+		case RELE_8_ON:	
+			ReleOn(Command);
+			Result = true;
+			break;
+		case RESET_ENERGY:
+			Result = ResetEnergies();
+			break;
+		default:
+			break;
+	}
+	if(Result)	
+		CommandReturn = DONE;
+	return CommandReturn;
+}
+
+
 static void WichInfo()
 {
 	while(Wire.available())
 	{
    		WichData = Wire.read();
-	}
-	ReleAction(WichData);
+	}	
+	CommandResult = GetCommand(WichData);
 }
 
 static void SendInfo()
@@ -66,9 +108,9 @@ static void SendInfo()
 		case CURRENT:
 			Wire.write(CurrentStr.c_str());
 			break;
-		// case POWER:
-			// Wire.write(PowerStr.c_str());
-			// break;
+		case RESET_ENERGY:
+			Wire.write(CommandResult);
+			break;
 		default:
 			break;
 	}
