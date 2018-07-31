@@ -8,7 +8,7 @@
 short    ButtonPress = NO_PRESS;
 short    TickSecond = 0, Tick5Second = 0;
 short    WichData = NO_DATA;
-short  CommandResult = UNDONE;
+short    CommandResult = UNDONE;
 uint16_t TimeExecEnergy, TimeExec4Calib;
 
 extern String		EnergyStr;
@@ -157,6 +157,9 @@ void loop()
 	if(TickSecond == (SECOND(1) / TimeExecEnergy))
 	{
 		TickSecond = 0;
-		MeasureValueSec();	
+		MeasureValueSec();
+#ifdef DEBUG_SERIAL
+		Serial.prinln(TimeExecEnergy);
+#endif
 	}	
 }

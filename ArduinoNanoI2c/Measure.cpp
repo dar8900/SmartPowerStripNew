@@ -60,7 +60,6 @@ float CalcCurrent()
 void CalcEnergy() // 200ms ca
 {
 	CurrentCalculated = CalcCurrent() - CurrentOffset;
-	Serial.println(CurrentCalculated);
 	if(CurrentCalculated >= -MIN_CURRENT && CurrentCalculated <= MIN_CURRENT)
 	{
 		PowerMeasure = CurrentCalculated * (float)TENSIONE_LINEA;
@@ -83,6 +82,24 @@ void MeasureValueSec()
 	EnergyStr = String(EnergyMeasured); // Invio la stringa formattata in W/s
 	CurrentStr = String(CurrentCalculated);
 	PowerStr = String(PowerMeasure);
+	
+#ifdef DEBUG_SERIAL
+	Serial.print("AdcOffset = ");
+	Serial.print(AdcOffset);
+	Serial.println();
+	Serial.print(CurrentCalculated, 3);
+	Serial.print("A");
+	Serial.println();
+	Serial.print(CurrentOffset, 3);
+	Serial.print("A Offset");
+	Serial.println();
+	Serial.print(PowerMeasure, 3);
+	Serial.print("W");
+	Serial.println();
+	Serial.print(EnergyMeasured, 3);
+	Serial.print("Wh");
+	Serial.println();
+#endif
 }
 
 

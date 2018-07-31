@@ -6,6 +6,8 @@
 
 #define NO_DATA	30
 
+#define DEBUG_SERIAL
+
 typedef enum
 {
 	BUTTON_UP = 0,
