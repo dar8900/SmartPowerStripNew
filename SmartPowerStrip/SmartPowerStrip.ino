@@ -96,6 +96,7 @@ short EnterSetup;
 
 String VersionValue = "2.4";
 String VersionDate  = "27/07/18";
+String ModelNumber  = "001";
 
 void BlinkLed(short pin)
 {
@@ -180,7 +181,7 @@ void setup()
 	LCDInit();
 	
 	RTCInit();
-	LCDShowSplashScreen("Smart Power Strip", "HomeMicroTech");
+	LCDShowSplashScreen("Smart Power Strip", "HomeMicroTech", String("Modello: " + ModelNumber));
 	WifiConfInit();
 	WifiInit();
 	if(Flag.WifiActive)

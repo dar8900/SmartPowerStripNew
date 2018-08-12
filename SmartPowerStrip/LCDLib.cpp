@@ -43,14 +43,17 @@ void LCDShowPopUp(String Avviso)
 	ClearLCD();
 }
 
-void LCDShowSplashScreen(String Messaggio_1, String Messaggio_2)
+void LCDShowSplashScreen(String Messaggio_1, String Messaggio_2, String Messaggio_3)
 {
 	ClearLCD();
 	LCDDisplayOn();
 	LCDPrintString(TWO, CENTER_ALIGN, Messaggio_1);
 	delay(1200);
 	ClearLCD();
-	LCDPrintString(TWO, CENTER_ALIGN, Messaggio_1);
+	LCDPrintString(TWO, CENTER_ALIGN, Messaggio_2);
+	delay(1200);
+	ClearLCD();
+	LCDPrintString(TWO, CENTER_ALIGN, Messaggio_3);
 	delay(1200);
 	ClearLCD();
 }
