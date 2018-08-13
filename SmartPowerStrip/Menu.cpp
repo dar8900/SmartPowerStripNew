@@ -462,6 +462,7 @@ bool ManualRele()
 {
 	short ReleIndx = RELE_1;
 	bool ReleSetted = false, OnOffAll = false,  ExitManualRele = false, SetTheRele = false;
+	bool FirstBackSet = false;
 	String SelRele;
 	uint8_t ButtonPress = NO_PRESS, Status = 0, OldStatus = 0;
 	if(Flag.AllReleUp)
@@ -531,6 +532,7 @@ bool ManualRele()
 				case BUTTON_LEFT:
 					SetTheRele = false;
 					ExitManualRele = true;
+					FirstBackSet = true;
 				case BUTTON_SET:
 					SetTheRele = true;
 				default:
@@ -554,6 +556,11 @@ bool ManualRele()
 				{
 					CheckEvents();
 					ButtonPress = CheckButtons();
+					if(FirstBackSet)
+					{
+						ButtonPress = BUTTON_LEFT;
+						FirstBackSet = false;
+					}
 					LCDPrintString(THREE, CENTER_ALIGN, ONOFF[Status]);
 					switch(ButtonPress)
 					{
@@ -587,8 +594,9 @@ bool ManualRele()
 								Rele[ReleIndx].TurnOnTime = SetTimeVarRele(0,0,0,0);
 								OFF(ReleIdx2Pin(ReleIndx));
 								ReleOff(ReleIndx);
-								SelRele = "Presa" + String(ReleIndx + 1) + "spenta";
+								SelRele = "Presa " + String(ReleIndx + 1) + " spenta";
 								LCDPrintString(THREE, CENTER_ALIGN, SelRele);
+								SaveReleStatus(ReleIndx, STATUS_OFF);
 							}
 							else
 							{
@@ -600,8 +608,9 @@ bool ManualRele()
 								Rele[ReleIndx].TurnOnTime.hour = PresentTime.hour;
 								Rele[ReleIndx].TurnOnTime.minute = PresentTime.minute;
 								Rele[ReleIndx].ActiveTime.minute = 0;
-								SelRele = "Presa" + String(ReleIndx + 1) + "accesa";
+								SelRele = "Presa " + String(ReleIndx + 1) + " accesa";
 								LCDPrintString(THREE, CENTER_ALIGN, SelRele);
+								SaveReleStatus(ReleIndx, STATUS_ON);
 							}
 							SaveReleStatus(ReleIndx, Status);
 							ReleSetted = true;

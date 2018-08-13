@@ -59,4 +59,5 @@ void CheckReleStatus(void);
 bool SetTimerRele(short ReleNbr);
 RELE_TIME_FORMAT SetTimeVarRele(short Hour, short Minute, short Second, short Day);
 short ReleIdx2Pin(short ReleIndx);
+void SaveReleStatus(short ReleIndx, short Status);
 #endif

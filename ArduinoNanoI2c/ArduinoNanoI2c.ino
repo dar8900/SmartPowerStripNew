@@ -159,7 +159,7 @@ void loop()
 		TickSecond = 0;
 		MeasureValueSec();
 #ifdef DEBUG_SERIAL
-		Serial.prinln(TimeExecEnergy);
+		Serial.println(TimeExecEnergy);
 #endif
 	}	
 }
