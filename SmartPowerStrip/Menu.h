@@ -98,6 +98,7 @@ bool ChangeTimerDisplay(void);
 bool TurnOffWifi(void);
 bool ChangeUdmEnergy(void);
 bool ResetEnergy(void);
+void FirstResetEnergy(void);
 bool ResetDefault(void);
 bool RestartEsp(void);
 void ScreenTimerRefresh(void);

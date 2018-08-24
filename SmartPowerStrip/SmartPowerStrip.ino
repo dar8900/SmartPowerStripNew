@@ -94,7 +94,7 @@ uint8_t EmptyIcon[]
 FLAGS Flag;
 short EnterSetup;
 
-String VersionValue = "2.4";
+String VersionValue = "2.5";
 String VersionDate  = "27/07/18";
 String ModelNumber  = "001";
 
@@ -182,6 +182,7 @@ void setup()
 	
 	RTCInit();
 	LCDShowSplashScreen("Smart Power Strip", "HomeMicroTech", String("Modello: " + ModelNumber));
+	FirstResetEnergy();
 	WifiConfInit();
 	WifiInit();
 	if(Flag.WifiActive)
@@ -197,7 +198,7 @@ void setup()
 	TakePresentTime();
 
 	ReadMemory(FIRST_START_CHECK_ADDR, 1, &FirstStart);
-	if(FirstStart == EMPTY_MEMORY_VALUE)
+	if(FirstStart == EMPTY_MEMORY_VALUE || IsBackToDefault())
 	{
 		WriteMemory(FIRST_START_CHECK_ADDR, 0);
 		LCDNoBlink();

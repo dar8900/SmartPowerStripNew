@@ -1442,6 +1442,11 @@ bool ChangeUdmEnergy()
 	ClearLCD();
 }
 
+void FirstResetEnergy()
+{
+	SendCommand(RESET_ENERGY);
+}
+
 bool ResetEnergy()
 {
 	bool Reset = false, ConfirmReset = false;
@@ -1474,7 +1479,7 @@ bool ResetDefault()
 	ClearLCD();
 	LCDPrintString(TWO, CENTER_ALIGN, "Impostare i valori");
 	LCDPrintString(THREE, CENTER_ALIGN, "di default?");
-	//Reset = CheckYesNo();
+	Reset = CheckYesNo();
 	if(Reset)
 		Reset2Factory();
 	return true;
@@ -1486,7 +1491,7 @@ bool RestartEsp()
 	ClearLCD();
 	LCDPrintString(TWO, CENTER_ALIGN, "Eseguire il restart");
 	LCDPrintString(THREE, CENTER_ALIGN, "della ciabatta?");
-	//Reset = CheckYesNo();
+	Reset = CheckYesNo();
 	if(Reset)
 		RestartESP();
 	return true;
