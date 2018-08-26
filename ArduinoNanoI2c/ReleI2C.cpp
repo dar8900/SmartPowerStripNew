@@ -82,14 +82,14 @@ static short ReleIndx2Pin(short ReleIdx)
 void ReleOn(short ReleIdx)
 {
 	short Pin = ReleIndx2Pin(ReleIdx);
-	digitalWrite(Pin, HIGH);
+	digitalWrite(Pin, LOW);
 	return;
 }
 
 void ReleOff(short ReleIdx)
 {
 	short Pin = ReleIndx2Pin(ReleIdx);
-	digitalWrite(Pin, LOW);
+	digitalWrite(Pin, HIGH);
 	return;
 }
 

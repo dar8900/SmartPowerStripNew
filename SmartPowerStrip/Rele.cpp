@@ -128,7 +128,7 @@ void TakeReleTime()
 
 void SaveReleStatus(short ReleIndx, short Status)
 {
-	EepromUpdate(Rele[ReleIndx].EepromAddr, Status);
+	WriteMemory(Rele[ReleIndx].EepromAddr, Status);
 }
 
 bool ReleInit(bool FirstGo)

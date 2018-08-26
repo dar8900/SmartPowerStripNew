@@ -95,7 +95,7 @@ FLAGS Flag;
 short EnterSetup;
 
 String VersionValue = "2.5";
-String VersionDate  = "27/07/18";
+String VersionDate  = "24/08/18";
 String ModelNumber  = "001";
 
 void BlinkLed(short pin)
