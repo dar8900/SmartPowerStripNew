@@ -24,6 +24,7 @@ typedef enum
 	 BACKLIGH_TIMER,
 	 TURN_OFF_WIFI,
 	 CHANGE_UDM_ENERGY,
+	 CHANGE_TARIFF,
 	 ENERGY_RESET,
 	 RESET_DEFAULT,
 	 RESTART_ESP,
@@ -62,6 +63,12 @@ typedef enum
 	MAX_UDM_ITEM
 }UDM_ENERGY_ITEM;
 
+typedef enum
+{
+	NOT_SETTED = 0,
+	SETTED
+} TARIFF_STATUS;
+
 typedef struct
 {
 	uint16_t DelayValue;
@@ -97,6 +104,8 @@ bool AssignReleTimer(void);
 bool ChangeTimerDisplay(void);
 bool TurnOffWifi(void);
 bool ChangeUdmEnergy(void);
+bool ChangeTariff(void);
+void LoadTariffValue(void);
 bool ResetEnergy(void);
 void FirstResetEnergy(void);
 bool ResetDefault(void);

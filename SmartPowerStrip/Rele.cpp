@@ -27,7 +27,7 @@ RELE Rele[]
 static short TmpMinute[RELE_MAX];
 static bool IsNewMinute[RELE_MAX];
 
-void TurnOffAllRele()
+void TurnOffAllRele(bool SaveSatus)
 {
 	short ReleIndx;
 	for(ReleIndx = RELE_1; ReleIndx < RELE_MAX; ReleIndx++)
@@ -38,13 +38,14 @@ void TurnOffAllRele()
 		delay(500);
 		Rele[ReleIndx].TurnOnTime = SetTimeVarRele(0,0,0,0);
 		Rele[ReleIndx].ActiveTime = SetTimeVarRele(0,0,0,0);
-		SaveReleStatus(ReleIndx, STATUS_OFF);
+		if(SaveSatus)
+			SaveReleStatus(ReleIndx, STATUS_OFF);
 	}
 	Flag.AllReleDown = true;
 	Flag.AllReleUp = false;
 }
 
-void TurnOnAllRele()
+void TurnOnAllRele(bool SaveSatus)
 {
 	short ReleIndx;
 	CheckEvents();
@@ -57,7 +58,8 @@ void TurnOnAllRele()
 		Rele[ReleIndx].TurnOnTime.hour = PresentTime.hour;
 		Rele[ReleIndx].TurnOnTime.minute = PresentTime.minute;
 		Rele[ReleIndx].ActiveTime.minute = 0;
-		SaveReleStatus(ReleIndx, STATUS_ON);
+		if(SaveSatus)
+			SaveReleStatus(ReleIndx, STATUS_ON);
 		delay(500);
 	}
 	Flag.AllReleDown = false;
@@ -128,7 +130,7 @@ void TakeReleTime()
 
 void SaveReleStatus(short ReleIndx, short Status)
 {
-	WriteMemory(Rele[ReleIndx].EepromAddr, Status);
+	EepromUpdate(Rele[ReleIndx].EepromAddr, Status);
 }
 
 bool ReleInit(bool FirstGo)
@@ -143,7 +145,7 @@ bool ReleInit(bool FirstGo)
 		ClearLCD();
 		LCDPrintString(ONE, CENTER_ALIGN, "Test in corso");
 		LCDPrintString(TWO, CENTER_ALIGN, "attendere...");
-		TurnOffAllRele();
+		TurnOffAllRele(NO_SAVE);
 		ClearLCD();
 		Flag.AllReleDown = false;
 		for(ReleIndx = RELE_1; ReleIndx < RELE_MAX; ReleIndx++)

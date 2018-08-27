@@ -94,8 +94,8 @@ uint8_t EmptyIcon[]
 FLAGS Flag;
 short EnterSetup;
 
-String VersionValue = "2.5";
-String VersionDate  = "24/08/18";
+String VersionValue = "2.6";
+String VersionDate  = "27/08/18";
 String ModelNumber  = "001";
 
 void BlinkLed(short pin)
@@ -205,7 +205,7 @@ void setup()
 		LCDDisplayOn();
 		SetBandInvalid();
 		LCDDisplayOff();
-		TurnOffAllRele();
+		TurnOffAllRele(SAVE);
 		Flag.IsBandSetted = false;
 		Flag.IsDisplayOn = false;
 		Flag.ReleRS = true;

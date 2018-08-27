@@ -2,7 +2,8 @@
 #define RELE_H
 #define MAX_TIME_TIMER		14401
 
-
+#define NO_SAVE		false
+#define SAVE		true
 
 typedef enum
 {
@@ -53,8 +54,8 @@ bool ReleInit(bool FirstGo);
 void ReleReStart(void);
 void TakeReleTime(void);
 void ShowReleIcons(short Row);
-void TurnOffAllRele(void);
-void TurnOnAllRele(void);
+void TurnOffAllRele(bool SaveSatus);
+void TurnOnAllRele(bool SaveSatus);
 void CheckReleStatus(void);
 bool SetTimerRele(short ReleNbr);
 RELE_TIME_FORMAT SetTimeVarRele(short Hour, short Minute, short Second, short Day);

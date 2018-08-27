@@ -21,6 +21,8 @@ extern String VersionDate;
 uint16_t TimerRefreshMenu;
 short TimerClientConnected = DELAY_CLIENT_CONNECTION;
 bool ExitFromBand = true;
+uint16_t TariffaInt;
+float TariffaFloat;
 
 const MENU_VOICES MainMenuItems[]
 {
@@ -40,6 +42,7 @@ const MENU_VOICES GeneralSetup[]
 	{ChangeTimerDisplay , "Timer display on"},
 	{TurnOffWifi        , "Spegni Wifi"     },
 	{ChangeUdmEnergy    , "UDM Energia"     },
+	{ChangeTariff       , "Cambia tariffa"  },
 	{ResetEnergy        , "Reset Energia"   },
 	{ResetDefault       , "Reset Default"   },
 	{RestartEsp         , "Restart Ciabatta"},
@@ -107,8 +110,9 @@ static uint8_t SearchFormatRange(float ValueToFormat)
 void MenuInit()
 {
 	short Delay = MAIN_SCREEN_TIMER_DEFAULT;
-	short EnergyUdm;
+	short EnergyUdm = 0, TariffStatus = 0;
 	ReadMemory(TIMER_BACKLIGHT_ADDR, 1, &Delay);
+	ReadMemory(TARIFF_STATUS_ADDR, 1, &TariffStatus);
 	if(Delay > MAX_DELAY_TIMERS)
 	{
 		Delay = TEN_MINUTES;
@@ -126,6 +130,13 @@ void MenuInit()
 	LCDPrintString(THREE, CENTER_ALIGN, TimerDalays[Delay].DelayStr);
 	delay(DELAY_MENU_MSG);
 	ClearLCD();
+	if(TariffStatus != SETTED)
+	{
+		EepromUpdate(TARIFF_STATUS_ADDR, NOT_SETTED);
+		ChangeTariff();
+	}
+	else
+		LoadTariffValue();
 	return;
 }
 
@@ -163,7 +174,7 @@ void MainScreen(short EnterSetup)
 			}
 			if(!Flag.AllReleDown)
 			{
-				TurnOffAllRele();
+				TurnOffAllRele(NO_SAVE);
 			}
 			for(ReleIndx = RELE_1; ReleIndx < RELE_MAX; ReleIndx++)
 			{
@@ -487,16 +498,12 @@ bool ManualRele()
 		delay(DELAY_MENU_MSG);
 		if(Flag.AllReleUp)
 		{
-			TurnOffAllRele();
-			for(ReleIndx = RELE_1; ReleIndx < RELE_MAX; ReleIndx++)
-			{
-				SaveReleStatus(ReleIndx, STATUS_OFF);
-			}
+			TurnOffAllRele(SAVE);
 			LCDShowPopUp("Tutte Spente");
 		}
 		else
 		{
-			TurnOnAllRele();
+			TurnOnAllRele(SAVE);
 			LCDShowPopUp("Tutte Accese");
 		}
 	}
@@ -532,7 +539,7 @@ bool ManualRele()
 				case BUTTON_LEFT:
 					SetTheRele = false;
 					ExitManualRele = true;
-					FirstBackSet = true;
+					break;
 				case BUTTON_SET:
 					SetTheRele = true;
 				default:
@@ -551,16 +558,11 @@ bool ManualRele()
 					LCDPrintString(THREE, CENTER_ALIGN, ONOFF[STATUS_OFF]);
 					Status = STATUS_OFF;
 				}
-				OldStatus = Status;
+				OldStatus = Status;			
 				while(!ReleSetted)
 				{
 					CheckEvents();
-					ButtonPress = CheckButtons();
-					if(FirstBackSet)
-					{
-						ButtonPress = BUTTON_LEFT;
-						FirstBackSet = false;
-					}
+					ButtonPress = CheckButtons();	
 					LCDPrintString(THREE, CENTER_ALIGN, ONOFF[Status]);
 					switch(ButtonPress)
 					{
@@ -1030,8 +1032,8 @@ bool ShowMeasures()
 			}
 			if(!EnergyOrEuro)
 			{
-				EuroValue = ((EnergyStr.toFloat()) / 3600.0) * TARIFFA;
-				EnergyStr = String(EuroValue) + "Euro";
+				EuroValue = ((EnergyStr.toFloat()) / 3600.0) * TariffaFloat;
+				EnergyStr = String(EuroValue) + " E/kWh";
 			}
 			else
 			{
@@ -1441,6 +1443,103 @@ bool ChangeUdmEnergy()
 	}
 	ClearLCD();
 }
+
+void LoadTariffValue()
+{
+	uint8_t TariffMemoryAddr = 0;
+	short Tariffa[4];
+	for(TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR; TariffMemoryAddr < (FOURTH_TARIFF_NUMBER_ADDR + 1); TariffMemoryAddr++)
+	{
+		ReadMemory(TariffMemoryAddr, 1, &Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR]);
+	}	
+	TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2] * 10) + (Tariffa[3]);
+	TariffaFloat = ((float)TariffaInt) / 100000.0;
+}
+
+bool ChangeTariff()
+{
+	short ButtonPress = NO_PRESS, TariffStatus = 0;
+	uint8_t TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR;
+	int8_t Tariffa[4] = {0,0,0,0}, Cursor = 0;
+	String TariffaStr = "0.0";
+	bool ExitChangeTariff = false;
+	ReadMemory(TARIFF_STATUS_ADDR, 1, &TariffStatus);
+	if(TariffStatus == SETTED)
+	{
+		Tariffa[0] = TariffaInt / 1000;
+		Tariffa[1] = (TariffaInt / 100) - ((TariffaInt / 1000) * 10);
+		Tariffa[2] = (TariffaInt / 10) - ((TariffaInt / 100) * 10);
+		Tariffa[3] = (TariffaInt) - ((TariffaInt / 10) * 10);
+	}
+	ClearLCD();
+	LCDPrintString(TWO, CENTER_ALIGN, "Cambia la tariffa");
+	LCDPrintString(FOUR, CENTER_ALIGN, "E/kWh");
+	LCDBlink();
+	
+	while(!ExitChangeTariff)
+	{
+		CheckEvents();
+		ButtonPress = CheckButtons();
+		switch(ButtonPress)
+		{
+			case BUTTON_UP:
+				Tariffa[Cursor]++;
+				if(Tariffa[Cursor] > 9)
+					Tariffa[Cursor] = 0;
+				break;
+			case BUTTON_DOWN:
+				Tariffa[Cursor]--;
+				if(Tariffa[Cursor] < 0)
+					Tariffa[Cursor] = 9;
+				break;
+			case BUTTON_LEFT:
+				Cursor++;
+				if(Cursor > 3)
+					Cursor = 0;
+				switch(Cursor)
+				{
+					case 0:
+						LCDMoveCursor(THREE, 9);
+						break;
+					case 1: 
+						LCDMoveCursor(THREE, 10);
+						break;
+					case 2:
+						LCDMoveCursor(THREE, 11);
+						break;
+					case 3:
+						LCDMoveCursor(THREE, 12);
+						break;
+					default:
+						break;
+				}
+				break;
+			case BUTTON_SET:
+				ClearLCD();
+				LCDPrintString(TWO, CENTER_ALIGN, "Tariffa settata");
+				delay(DELAY_INFO_MSG);
+				ClearLCD();
+				LCDNoBlink();
+				for(TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR; TariffMemoryAddr < (FOURTH_TARIFF_NUMBER_ADDR + 1); TariffMemoryAddr++)
+				{
+					EepromUpdate(TariffMemoryAddr, Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR]);
+				}
+				TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2] * 10) + (Tariffa[3]);
+				TariffaFloat = ((float)TariffaInt) / 100000.0;
+				EepromUpdate(TARIFF_STATUS_ADDR, SETTED);
+				ExitChangeTariff = true;
+				break;
+			default:
+				break;			
+		}
+		TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2] * 10) + (Tariffa[3]);
+		TariffaStr = TariffaStr + String(TariffaInt);
+		LCDPrintString(THREE, 6, TariffaStr);
+		delay(WHILE_LOOP_DELAY*4); // 120ms per il blink
+	}
+	
+}
+
 
 void FirstResetEnergy()
 {

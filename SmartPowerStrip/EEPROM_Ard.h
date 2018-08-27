@@ -39,7 +39,13 @@ typedef enum
 #define TIMER_BACKLIGHT_ADDR				   21
 #define UDM_ENERGY_ADDR				           22
 
-#define WIFI_WPS_CONF_ADDR					   23	
+#define WIFI_WPS_CONF_ADDR					   23
+
+#define FIRST_TARIFF_NUMBER_ADDR               24
+#define SECOND_TARIFF_NUMBER_ADDR              25
+#define THIRD_TARIFF_NUMBER_ADDR               26
+#define FOURTH_TARIFF_NUMBER_ADDR              27
+#define TARIFF_STATUS_ADDR					   28
 
 #define FLAG_VALUE_ADDR					 	   50
 #define NUMBER_REG_BACKLIGHT				   51	
