@@ -143,6 +143,7 @@ void setup()
 	Wire.onReceive(WichInfo);
 	Wire.onRequest(SendInfo);
 	CurrentCalibration();
+	TurnOffRele();
 }
 
 void loop() 

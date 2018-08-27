@@ -68,8 +68,7 @@ void CalcEnergy() // 200ms ca
 	}
 	else
 	{
-		PowerMeasure = 0.0;
-		
+		PowerMeasure = 0.0;		
 	}
 }
 
@@ -97,7 +96,7 @@ void MeasureValueSec()
 	Serial.print("W");
 	Serial.println();
 	Serial.print(EnergyMeasured, 3);
-	Serial.print("Wh");
+	Serial.print("Ws");
 	Serial.println();
 #endif
 }

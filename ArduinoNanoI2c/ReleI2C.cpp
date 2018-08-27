@@ -93,3 +93,13 @@ void ReleOff(short ReleIdx)
 	return;
 }
 
+void TurnOffRele()
+{
+	uint8_t ReleIdx = 0;
+	for(ReleIdx = RELE_1; ReleIdx < MAX_PIN; ReleIdx++)
+	{
+		digitalWrite(ReleIdx, HIGH);
+		delay(50);
+	}	
+	return;
+}

@@ -26,4 +26,5 @@ typedef enum
 // void ReleAction(short WichRele);
 void ReleOn(short ReleIdx);
 void ReleOff(short ReleIdx);
+void TurnOffRele(void);
 #endif

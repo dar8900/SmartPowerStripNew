@@ -30,7 +30,8 @@ enum
 	RELE_5,
 	RELE_6,
 	RELE_7,
-	RELE_8	
+	RELE_8,
+	MAX_PIN
 };
 
 enum
