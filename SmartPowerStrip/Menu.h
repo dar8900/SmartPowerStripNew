@@ -69,6 +69,25 @@ typedef enum
 	SETTED
 } TARIFF_STATUS;
 
+typedef enum
+{
+	m_1 = 0,
+	m_2,
+	m_3,
+	VOID_1,
+	VOID_2,
+	VOID_3,
+	k_1,
+	k_2,
+	k_3,
+	M_1,
+	M_2,
+	M_3,
+	G_1,
+	MAX_FORMAT_RANGE
+	
+}FORMAT_RANGES;
+
 typedef struct
 {
 	uint16_t DelayValue;

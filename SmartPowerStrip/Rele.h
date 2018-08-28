@@ -54,6 +54,8 @@ bool ReleInit(bool FirstGo);
 void ReleReStart(void);
 void TakeReleTime(void);
 void ShowReleIcons(short Row);
+void TurnOnRele(short ReleIndx);
+void TurnOffRele(short ReleIndx);
 void TurnOffAllRele(bool SaveSatus);
 void TurnOnAllRele(bool SaveSatus);
 void CheckReleStatus(void);

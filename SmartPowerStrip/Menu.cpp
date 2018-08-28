@@ -83,12 +83,11 @@ const FORMAT_ENERGY TabFormat[] =
 	{1000000000.0, 0.000000001, "G"},
 };
 
-
 static const String ONOFF[] = {"Off", "On"};
 
 static uint8_t SearchFormatRange(float ValueToFormat)
 {
-	uint8_t TabLenght = 13;
+	uint8_t TabLenght = MAX_FORMAT_RANGE;
 	uint8_t Range = 0;
 	for(Range = 0; Range < TabLenght; Range++)
 	{
@@ -591,28 +590,15 @@ bool ManualRele()
 								LCDPrintString(TWO, CENTER_ALIGN, "Valore non cambiato");
 							if(Status == STATUS_OFF)
 							{
-								Rele[ReleIndx].IsActive = false;
-								Rele[ReleIndx].ActiveTime = SetTimeVarRele(0,0,0,0);
-								Rele[ReleIndx].TurnOnTime = SetTimeVarRele(0,0,0,0);
-								OFF(ReleIdx2Pin(ReleIndx));
-								ReleOff(ReleIndx);
+								TurnOffRele(ReleIndx);
 								SelRele = "Presa " + String(ReleIndx + 1) + " spenta";
 								LCDPrintString(THREE, CENTER_ALIGN, SelRele);
-								SaveReleStatus(ReleIndx, STATUS_OFF);
 							}
 							else
 							{
-								Rele[ReleIndx].IsActive = true;
-								ON(ReleIdx2Pin(ReleIndx));
-								ReleOn(ReleIndx);
-								Flag.AllReleDown = false;
-								Rele[ReleIndx].TurnOnTime.day = PresentTime.day;
-								Rele[ReleIndx].TurnOnTime.hour = PresentTime.hour;
-								Rele[ReleIndx].TurnOnTime.minute = PresentTime.minute;
-								Rele[ReleIndx].ActiveTime.minute = 0;
+								TurnOnRele(ReleIndx);
 								SelRele = "Presa " + String(ReleIndx + 1) + " accesa";
 								LCDPrintString(THREE, CENTER_ALIGN, SelRele);
-								SaveReleStatus(ReleIndx, STATUS_ON);
 							}
 							SaveReleStatus(ReleIndx, Status);
 							ReleSetted = true;

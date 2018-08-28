@@ -27,6 +27,33 @@ RELE Rele[]
 static short TmpMinute[RELE_MAX];
 static bool IsNewMinute[RELE_MAX];
 
+void TurnOnRele(short ReleIndx)
+{
+	Flag.AllReleDown = false;
+	ON(ReleIdx2Pin(ReleIndx));
+	ReleOn(ReleIndx);
+	Rele[ReleIndx].IsActive = true;
+	Rele[ReleIndx].TurnOnTime.day = PresentTime.day;
+	Rele[ReleIndx].TurnOnTime.hour = PresentTime.hour;
+	Rele[ReleIndx].TurnOnTime.minute = PresentTime.minute;
+	Rele[ReleIndx].ActiveTime.minute = 0;
+	SaveReleStatus(ReleIndx, STATUS_ON);
+	return;
+}
+
+void TurnOffRele(short ReleIndx)
+{
+	Flag.AllReleUp = false;
+	OFF(ReleIdx2Pin(ReleIndx));
+	ReleOff(ReleIndx);
+	Rele[ReleIndx].IsActive = false;
+	Rele[ReleIndx].ActiveTime = SetTimeVarRele(0,0,0,0);
+	Rele[ReleIndx].TurnOnTime = SetTimeVarRele(0,0,0,0);
+	SaveReleStatus(ReleIndx, STATUS_OFF);
+	return;
+}
+
+
 void TurnOffAllRele(bool SaveSatus)
 {
 	short ReleIndx;
@@ -194,20 +221,12 @@ void ReleReStart()
 		ReadMemory(Rele[ReleIndx].EepromAddr, 1, &TmpReleActive);
 		if(TmpReleActive == STATUS_OFF)
 		{
-			Rele[ReleIndx].IsActive = false;
-			OFF(ReleIdx2Pin(ReleIndx));
-			ReleOff(ReleIndx);
+			TurnOffRele(ReleIndx);
 		}
 		else
 		{
-			Rele[ReleIndx].IsActive = true;
-			ON(ReleIdx2Pin(ReleIndx));
-			ReleOn(ReleIndx);
 			Flag.AllReleDown = false;
-			Rele[ReleIndx].TurnOnTime.day = PresentTime.day;
-			Rele[ReleIndx].TurnOnTime.hour = PresentTime.hour;
-			Rele[ReleIndx].TurnOnTime.minute = PresentTime.minute;
-			Rele[ReleIndx].ActiveTime.minute = 0;
+			TurnOnRele(ReleIndx);
 			CheckEvents();
 		}
 
