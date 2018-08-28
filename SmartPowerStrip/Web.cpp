@@ -298,7 +298,7 @@ void WifiWiredConnections()
 	Flag.WifiActive = false;
 	ClearLCD();
 	WiFi.mode(WIFI_STA);
-	ReadMemory(WIFI_SSID_ADDR, 1, &OldWifiItem);
+	ReadMemory(WIFI_SSID_ADDR, &OldWifiItem);
 	if(OldWifiItem != NO_CONN && OldWifiItem < MAX_WIFI_ITEM && !Flag.WifiReconnect)
 	{
 		LCDPrintString(ONE, CENTER_ALIGN, "Vuoi riconnettere");
@@ -450,7 +450,7 @@ String GetWifiSignalPower()
 	bool Found = false;
 	short CurrentNetwork = 0;
 	short WifiItem = 0;
-	ReadMemory(WIFI_SSID_ADDR, 1, &WifiItem);
+	ReadMemory(WIFI_SSID_ADDR, &WifiItem);
 	TakePresentTime();
 	TakeReleTime();
 	for (CurrentNetwork = 0; CurrentNetwork < NumberOfNetworks; CurrentNetwork++)
@@ -497,7 +497,7 @@ String GetWifiSignalPower()
 void WifiScanForSignal()
 {
 	short WifiListItem = 0, ConnectionNumbers = 0, CurrentNetwork = 0;
-	ReadMemory(WIFI_SSID_ADDR, 1, &WifiListItem);
+	ReadMemory(WIFI_SSID_ADDR, &WifiListItem);
 	String Ssid;
 	int32_t RSSI;
 	bool Found = false;
@@ -510,7 +510,7 @@ void WifiScanForSignal()
 		ConnectionNumbers = WiFi.scanNetworks(false, true);
 		TakePresentTime();
 		TakeReleTime();
-		ReadMemory(WIFI_SSID_ADDR, 1, &WifiListItem);
+		ReadMemory(WIFI_SSID_ADDR, &WifiListItem);
 		for (CurrentNetwork = 0; CurrentNetwork < ConnectionNumbers; CurrentNetwork++)
 		{
 			Ssid = String(WiFi.SSID(CurrentNetwork));
@@ -603,7 +603,7 @@ void WifiDisconnect()
 {
 	ClearLCD();
 	short WifiItemSsid = 0;
-	ReadMemory(WIFI_SSID_ADDR, 1, &WifiItemSsid);
+	ReadMemory(WIFI_SSID_ADDR, &WifiItemSsid);
 	LCDPrintString(ONE, CENTER_ALIGN, "Disconnesso");
 	LCDPrintString(TWO, CENTER_ALIGN, "dalla rete:");
 	LCDPrintString(THREE, CENTER_ALIGN, MyNetworkList[WifiItemSsid].WifiName);

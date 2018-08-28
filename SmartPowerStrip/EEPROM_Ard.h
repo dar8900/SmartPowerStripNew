@@ -54,15 +54,37 @@ typedef enum
 
 #define FACTORY_RESET_ADDR					  200
 
+typedef struct
+{
+	uint32_t MaxValue;
+	uint8_t NumReg;
+}EEPROM_RANGE;
+
+typedef enum
+{	
+	SINGLE_REGISTER = 0,
+	THREE_REG,			
+	FOUR_REG,			
+	FIVE_REG,			
+	SIX_REG,			
+	SEVEN_REG,			
+	EIGHT_REG,			
+	NINE_REG,						
+	MAX_RANGE_ITEM
+}EEPROM_RANGE_ITEM;
+
 
 void EepromUpdate(short address, short value);
 void EepromInit(void);
-int WriteMemory(short address, short value);
-bool ReadMemory(short address, short numReg, short *value);
+void WriteMemory(short address, short value);
+// int WriteMemory(short address, short value);
+bool ReadMemory(short address, short *value);
+// bool ReadMemory(short address, short numReg, short *value);
 bool ClearMemory(void);
 bool IsMemoryEmpty(void);
 
-
+void WriteBigData(short InitAddress, uint32_t Value);
+uint32_t ReadBigData(short InitAddress, EEPROM_RANGE_ITEM Range);
 
 
 #endif

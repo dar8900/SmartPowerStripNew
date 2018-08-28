@@ -94,8 +94,8 @@ uint8_t EmptyIcon[]
 FLAGS Flag;
 short EnterSetup;
 
-String VersionValue = "2.6";
-String VersionDate  = "27/08/18";
+String VersionValue = "2.7";
+String VersionDate  = "28/08/18";
 String ModelNumber  = "001";
 
 void BlinkLed(short pin)
@@ -146,7 +146,7 @@ bool IsBackToDefault()
 {
 	bool BackToDefault = false;
 	short ResetValue = 0;
-	ReadMemory(FACTORY_RESET_ADDR, 1, &ResetValue);
+	ReadMemory(FACTORY_RESET_ADDR, &ResetValue);
 	if(ResetValue == 1)
 	{
 		BackToDefault = true;
@@ -197,7 +197,7 @@ void setup()
 	LCDCreateIcon(EmptyIcon, EMPTY);
 	TakePresentTime();
 
-	ReadMemory(FIRST_START_CHECK_ADDR, 1, &FirstStart);
+	ReadMemory(FIRST_START_CHECK_ADDR, &FirstStart);
 	if(FirstStart == EMPTY_MEMORY_VALUE || IsBackToDefault())
 	{
 		WriteMemory(FIRST_START_CHECK_ADDR, 0);

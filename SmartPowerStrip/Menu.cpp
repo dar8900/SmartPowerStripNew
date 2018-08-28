@@ -110,8 +110,8 @@ void MenuInit()
 {
 	short Delay = MAIN_SCREEN_TIMER_DEFAULT;
 	short EnergyUdm = 0, TariffStatus = 0;
-	ReadMemory(TIMER_BACKLIGHT_ADDR, 1, &Delay);
-	ReadMemory(TARIFF_STATUS_ADDR, 1, &TariffStatus);
+	ReadMemory(TIMER_BACKLIGHT_ADDR, &Delay);
+	ReadMemory(TARIFF_STATUS_ADDR, &TariffStatus);
 	if(Delay > MAX_DELAY_TIMERS)
 	{
 		Delay = TEN_MINUTES;
@@ -976,7 +976,7 @@ bool ShowMeasures()
 	float CurrentScaled = 0.0;
 	float PowerScaled = 0.0;
 	bool ExitShowEnergy = false, FormatEnergy = false, CurrentOrPower = false, EnergyOrEuro = true;
-	ReadMemory(UDM_ENERGY_ADDR, 1, &UdmEnergy);
+	ReadMemory(UDM_ENERGY_ADDR, &UdmEnergy);
 	ClearLCD();
 	if(!Flag.IsDisplayOn)
 	{
@@ -1118,7 +1118,7 @@ bool WiFiInfo()
 	LCDPrintString(THREE, CENTER_ALIGN, "per tornare al");
 	LCDPrintString(FOUR , CENTER_ALIGN, "Menu Principale");
 	delay(DELAY_MENU_MSG);
-	ReadMemory(WIFI_SSID_ADDR, 1, &WifiItemSsid);
+	ReadMemory(WIFI_SSID_ADDR, &WifiItemSsid);
 	CheckEvents();
 	ClearLCD();
 	while(!ExitWifiInfo)
@@ -1315,7 +1315,7 @@ bool ChangeTimerDisplay()
 	LCDPrintString(ONE, CENTER_ALIGN, "Scegliere il");
 	LCDPrintString(TWO, CENTER_ALIGN, "timer per la");
 	LCDPrintString(THREE, CENTER_ALIGN, "retroilluminazione: ");
-	ReadMemory(TIMER_BACKLIGHT_ADDR, 1, &DelayItem);
+	ReadMemory(TIMER_BACKLIGHT_ADDR,&DelayItem);
 	while(!ExitchangeDelay)
 	{
 		LCDPrintString(FOUR, CENTER_ALIGN, TimerDalays[DelayItem].DelayStr);
@@ -1372,7 +1372,7 @@ bool ChangeUdmEnergy()
 	bool ExitChangeUdm = false;
 	uint8_t ButtonPress = NO_PRESS;
 	short UdmEnergyItem, OldUdmEnergyItem;
-	ReadMemory(UDM_ENERGY_ADDR, 1, &UdmEnergyItem);
+	ReadMemory(UDM_ENERGY_ADDR, &UdmEnergyItem);
 	OldUdmEnergyItem = UdmEnergyItem;
 	ClearLCD();
 	while(!ExitChangeUdm)
@@ -1436,7 +1436,7 @@ void LoadTariffValue()
 	short Tariffa[4];
 	for(TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR; TariffMemoryAddr < (FOURTH_TARIFF_NUMBER_ADDR + 1); TariffMemoryAddr++)
 	{
-		ReadMemory(TariffMemoryAddr, 1, &Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR]);
+		ReadMemory(TariffMemoryAddr, &Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR]);
 	}	
 	TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2] * 10) + (Tariffa[3]);
 	TariffaFloat = ((float)TariffaInt) / 100000.0;
@@ -1449,7 +1449,7 @@ bool ChangeTariff()
 	int8_t Tariffa[4] = {0,0,0,0}, Cursor = 0;
 	String TariffaStr = "0.0";
 	bool ExitChangeTariff = false;
-	ReadMemory(TARIFF_STATUS_ADDR, 1, &TariffStatus);
+	ReadMemory(TARIFF_STATUS_ADDR, &TariffStatus);
 	if(TariffStatus == SETTED)
 	{
 		Tariffa[0] = TariffaInt / 1000;
@@ -1640,7 +1640,7 @@ bool CheckYesNo()
 void ScreenTimerRefresh()
 {
 	short DelayItem;
-	ReadMemory(TIMER_BACKLIGHT_ADDR, 1, &DelayItem);
+	ReadMemory(TIMER_BACKLIGHT_ADDR,&DelayItem);
 	if(DelayItem != ALWAYS_ON)
 	{
 		TimerRefreshMenu--;

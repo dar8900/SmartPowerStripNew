@@ -218,7 +218,7 @@ void ReleReStart()
 	LCDPrintString(THREE, CENTER_ALIGN, "le prese");
 	for(ReleIndx = RELE_1; ReleIndx < RELE_MAX; ReleIndx++)
 	{
-		ReadMemory(Rele[ReleIndx].EepromAddr, 1, &TmpReleActive);
+		ReadMemory(Rele[ReleIndx].EepromAddr, &TmpReleActive);
 		if(TmpReleActive == STATUS_OFF)
 		{
 			TurnOffRele(ReleIndx);

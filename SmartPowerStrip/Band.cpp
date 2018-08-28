@@ -15,7 +15,7 @@ extern FLAGS Flag;
 void BandInit()
 {
 	short BandValidationValue = 0, ReadBandIndx = 0;
-	ReadMemory(BAND_INVALIDATION_VALUE_ADDR, 1, &BandValidationValue);
+	ReadMemory(BAND_INVALIDATION_VALUE_ADDR, &BandValidationValue);
 	TakePresentTime();
 	ClearLCD();
 	if(BandValidationValue == VALID)
@@ -46,7 +46,7 @@ bool CheckBand()
 	bool InBand = false, BandInvalid = false;
 	short  BandValidationValue = INVALID;
 	TakePresentTime();
-	ReadMemory(BAND_INVALIDATION_VALUE_ADDR, 1, &BandValidationValue);
+	ReadMemory(BAND_INVALIDATION_VALUE_ADDR, &BandValidationValue);
 	if(BandValidationValue == INVALID)
 		BandInvalid = true;
 	else
@@ -231,16 +231,16 @@ void ReadBandValues(short WichItem)
 	switch (WichItem)
 	{
 		case INIT_HOUR:
-			ReadMemory(BAND_INIT_HOUR_ADDR, 1, &Band.InitHour);
+			ReadMemory(BAND_INIT_HOUR_ADDR, &Band.InitHour);
 			break;
 		case INIT_MINUTE:
-			ReadMemory(BAND_INIT_MINUTE_ADDR, 1,&Band.InitMinute);
+			ReadMemory(BAND_INIT_MINUTE_ADDR,&Band.InitMinute);
 			break;
 		case END_HOUR:
-			ReadMemory(BAND_END_HOUR_ADDR, 1, &Band.EndHour);
+			ReadMemory(BAND_END_HOUR_ADDR, &Band.EndHour);
 			break;
 		case END_MINUTE:
-			ReadMemory(BAND_END_MINUTE_ADDR, 1, &Band.EndMinute);
+			ReadMemory(BAND_END_MINUTE_ADDR, &Band.EndMinute);
 			break;
 		default:
 			break;
