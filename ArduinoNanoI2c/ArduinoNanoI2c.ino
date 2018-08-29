@@ -146,15 +146,22 @@ void setup()
 	pinMode(RELE_8, OUTPUT);
 	Wire.onReceive(WichInfo);
 	Wire.onRequest(SendInfo);
-	TempReadedEnergy = ReadBigData(ENERGY_VALUE_INIT_ADDR, NINE_REG);
+	// TempReadedEnergy = ReadBigData(ENERGY_VALUE_INIT_ADDR, NINE_REG);
 #ifdef DEBUG_SERIAL
-	Serial.print("Energia registrata: ";)
+	if(TempReadedEnergy > 100000)
+	{
+		TempReadedEnergy = 0;
+		// WriteBigData(ENERGY_VALUE_INIT_ADDR, (uint32_t)TempReadedEnergy);
+		// TempReadedEnergy = ReadBigData(ENERGY_VALUE_INIT_ADDR, NINE_REG);
+	}
+	Serial.print("Energia registrata: ");
 	Serial.println(TempReadedEnergy);
+	delay(3000);
 #endif
-	if(TempReadedEnergy > 0)
-		EnergyMeasured = (float) TempReadedEnergy;
-	CurrentCalibration();
 	TurnOffRele();
+	// if(TempReadedEnergy > 0)
+		// EnergyMeasured = (float) TempReadedEnergy;
+	CurrentCalibration();
 }
 
 void loop() 
@@ -175,9 +182,9 @@ void loop()
 		Serial.println(TimeExecEnergy);
 #endif
 	}	
-	if(Tick10Min == (SECOND(600) / TimeExecEnergy))
-	{
-		Tick10Min = 0;
-		WriteBigData(ENERGY_VALUE_INIT_ADDR, (uint32_t)EnergyMeasured);
-	}
+	// if(Tick10Min == (SECOND(60) / TimeExecEnergy))
+	// {
+		// Tick10Min = 0;
+		// WriteBigData(ENERGY_VALUE_INIT_ADDR, (uint32_t)EnergyMeasured);
+	// }
 }

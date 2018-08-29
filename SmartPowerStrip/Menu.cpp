@@ -1501,11 +1501,11 @@ bool ChangeTariff()
 				}
 				break;
 			case BUTTON_SET:
+				LCDNoBlink();
 				ClearLCD();
 				LCDPrintString(TWO, CENTER_ALIGN, "Tariffa settata");
 				delay(DELAY_INFO_MSG);
 				ClearLCD();
-				LCDNoBlink();
 				for(TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR; TariffMemoryAddr < (FOURTH_TARIFF_NUMBER_ADDR + 1); TariffMemoryAddr++)
 				{
 					EepromUpdate(TariffMemoryAddr, Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR]);
@@ -1518,9 +1518,12 @@ bool ChangeTariff()
 			default:
 				break;			
 		}
-		TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2] * 10) + (Tariffa[3]);
-		TariffaStr = TariffaStr + String(TariffaInt);
-		LCDPrintString(THREE, 6, TariffaStr);
+		if(!ExitChangeTariff)
+		{
+			TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2] * 10) + (Tariffa[3]);
+			TariffaStr = "0.0" + String(TariffaInt);
+			LCDPrintString(THREE, 6, TariffaStr);
+		}
 		delay(WHILE_LOOP_DELAY*4); // 120ms per il blink
 	}
 	

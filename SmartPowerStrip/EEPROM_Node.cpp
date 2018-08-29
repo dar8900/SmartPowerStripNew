@@ -120,7 +120,7 @@ int32_t ReadBigData(short InitAddress, EEPROM_RANGE_ITEM Range)
 	{
 		for(RegIndx = 0; RegIndx < EepromRangeTab[RealRange].NumReg; RegIndx++)
 		{
-			ReadMemory(InitAddress + RegIndx, (short)CompoundNumber[RegIndx]);
+			ReadMemory(InitAddress + RegIndx, (short*)CompoundNumber[RegIndx]);
 			if(RegIndx == 0)
 				Value = CompoundNumber[RegIndx] * (EepromRangeTab[RealRange].MaxValue);
 			else if(RegIndx < (EepromRangeTab[RealRange].NumReg - 1))
@@ -274,5 +274,6 @@ void EepromUpdate(short address, short value)
 	if(ValueRead != value)
 	{
 		EEPROM.write(address, value);
+		EEPROM.commit();
 	}
 }
