@@ -1446,6 +1446,7 @@ bool ChangeTariff()
 {
 	short ButtonPress = NO_PRESS, TariffStatus = 0;
 	uint8_t TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR;
+	uint16_t CycleTimer = 0, ExitCnt = 0, OldExitCnt = 0;
 	int8_t Tariffa[4] = {0,0,0,0}, Cursor = 0;
 	String TariffaStr = "0.0";
 	bool ExitChangeTariff = false;
@@ -1465,18 +1466,21 @@ bool ChangeTariff()
 	while(!ExitChangeTariff)
 	{
 		CheckEvents();
+		TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2] * 10) + (Tariffa[3]);
+		TariffaStr = "0.0" + String(TariffaInt);
+		LCDPrintString(THREE, 6, TariffaStr);
 		ButtonPress = CheckButtons();
 		switch(ButtonPress)
 		{
 			case BUTTON_UP:
-				Tariffa[Cursor]++;
-				if(Tariffa[Cursor] > 9)
-					Tariffa[Cursor] = 0;
-				break;
-			case BUTTON_DOWN:
 				Tariffa[Cursor]--;
 				if(Tariffa[Cursor] < 0)
 					Tariffa[Cursor] = 9;
+				break;
+			case BUTTON_DOWN:
+				Tariffa[Cursor]++;
+				if(Tariffa[Cursor] > 9)
+					Tariffa[Cursor] = 0;
 				break;
 			case BUTTON_LEFT:
 				Cursor++;
@@ -1499,6 +1503,7 @@ bool ChangeTariff()
 					default:
 						break;
 				}
+				ExitCnt++;
 				break;
 			case BUTTON_SET:
 				LCDNoBlink();
@@ -1518,12 +1523,29 @@ bool ChangeTariff()
 			default:
 				break;			
 		}
-		if(!ExitChangeTariff)
+		CycleTimer++;
+		if(CycleTimer == (WHILE_LOOP_DELAY * 134))
+			CycleTimer = 0;
+		if(CycleTimer >= (WHILE_LOOP_DELAY * 64) && ExitCnt == OldExitCnt)
+			ExitCnt = 0;
+		if(ExitCnt == (WHILE_LOOP_DELAY * 134))
 		{
-			TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2] * 10) + (Tariffa[3]);
-			TariffaStr = "0.0" + String(TariffaInt);
-			LCDPrintString(THREE, 6, TariffaStr);
-		}
+			LCDNoBlink();
+			ClearLCD();
+			LCDPrintString(TWO, CENTER_ALIGN, "Tariffa non settata");
+			delay(DELAY_INFO_MSG);
+			ClearLCD();	
+			TariffaInt = 0;
+			TariffaFloat = 0.0;
+			for(TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR; TariffMemoryAddr < (FOURTH_TARIFF_NUMBER_ADDR + 1); TariffMemoryAddr++)
+			{
+				Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR] = 0;
+				EepromUpdate(TariffMemoryAddr, Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR]);
+			}
+			EepromUpdate(TARIFF_STATUS_ADDR, NOT_SETTED);
+			ExitChangeTariff = true;
+		}			
+		OldExitCnt = ExitCnt;
 		delay(WHILE_LOOP_DELAY*4); // 120ms per il blink
 	}
 	
