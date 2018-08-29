@@ -1,16 +1,19 @@
 #include <Wire.h>
 #include <stdint.h>
 #include "ArduinoNanoI2c.h"
+#include "EEPROM_Ard_Nano.h"
 #include "Measure.h"
 #include "ReleI2C.h"
 
 
 short    ButtonPress = NO_PRESS;
-short    TickSecond = 0, Tick5Second = 0;
+short    TickSecond = 0;
+uint32_t Tick10Min;
 short    WichData = NO_DATA;
 short    CommandResult = UNDONE;
 uint16_t TimeExecEnergy, TimeExec4Calib;
 
+extern float 		EnergyMeasured;
 extern String		EnergyStr;
 extern String		CurrentStr;
 extern String       PowerStr;
@@ -126,6 +129,7 @@ static void BlinkLed(short pin)
 
 void setup() 
 {
+	int32_t TempReadedEnergy = 0;
 	Serial.begin(9600);
 	Wire.begin(ARDUINO_ADDR); 
 	pinMode(UP, INPUT);
@@ -142,6 +146,13 @@ void setup()
 	pinMode(RELE_8, OUTPUT);
 	Wire.onReceive(WichInfo);
 	Wire.onRequest(SendInfo);
+	TempReadedEnergy = ReadBigData(ENERGY_VALUE_INIT_ADDR, NINE_REG);
+#ifdef DEBUG_SERIAL
+	Serial.print("Energia registrata: ";)
+	Serial.println(TempReadedEnergy);
+#endif
+	if(TempReadedEnergy > 0)
+		EnergyMeasured = (float) TempReadedEnergy;
 	CurrentCalibration();
 	TurnOffRele();
 }
@@ -152,6 +163,7 @@ void loop()
 	ChekButtons();
 	CalcEnergy();
 	TickSecond++;
+	Tick10Min++;
 	TimeExecEnergy = millis() - TimeExecEnergy;
 	
 	// Viene misurata l'energia in Ws ogni sec e scritta nella stringa
@@ -163,4 +175,9 @@ void loop()
 		Serial.println(TimeExecEnergy);
 #endif
 	}	
+	if(Tick10Min == (SECOND(600) / TimeExecEnergy))
+	{
+		Tick10Min = 0;
+		WriteBigData(ENERGY_VALUE_INIT_ADDR, (uint32_t)EnergyMeasured);
+	}
 }

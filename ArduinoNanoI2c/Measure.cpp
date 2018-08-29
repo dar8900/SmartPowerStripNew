@@ -1,4 +1,5 @@
 #include "ArduinoNanoI2c.h"
+#include "EEPROM_Ard_Nano.h"
 #include "Measure.h"
 
 const float TensioneLinea  = 230.0;

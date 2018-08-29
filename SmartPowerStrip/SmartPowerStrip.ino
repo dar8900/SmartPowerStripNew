@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-#include "EEPROM_Ard.h"
+#include "EEPROM_Node.h"
 #include "LCDLib.h"
 #include "TimeLib.h"
 #include "SmartPowerStrip.h"

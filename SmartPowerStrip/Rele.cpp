@@ -1,7 +1,7 @@
 #include "LCDLib.h"
 #include "TimeLib.h"
 #include "SmartPowerStrip.h"
-#include "EEPROM_Ard.h"
+#include "EEPROM_Node.h"
 #include "I2CNano.h"
 #include "Menu.h"
 #include "Web.h"

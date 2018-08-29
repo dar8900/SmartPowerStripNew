@@ -84,7 +84,7 @@ bool ClearMemory(void);
 bool IsMemoryEmpty(void);
 
 void WriteBigData(short InitAddress, uint32_t Value);
-uint32_t ReadBigData(short InitAddress, EEPROM_RANGE_ITEM Range);
+int32_t ReadBigData(short InitAddress, EEPROM_RANGE_ITEM Range);
 
 
 #endif

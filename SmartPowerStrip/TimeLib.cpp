@@ -2,7 +2,7 @@
 #include "SmartPowerStrip.h"
 #include "LCDLib.h"
 #include "TimeLib.h"
-#include "EEPROM_Ard.h"
+#include "EEPROM_Node.h"
 #include "Rele.h"
 #include "I2CNano.h"
 

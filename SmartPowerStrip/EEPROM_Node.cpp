@@ -1,4 +1,4 @@
-#include "EEPROM_Ard.h"
+#include "EEPROM_Node.h"
 #include <Arduino.h>
 
 #ifndef NEW_EEPROM
@@ -95,22 +95,36 @@ void WriteBigData(short InitAddress, uint32_t Value)
 	return;
 }
 
-uint32_t ReadBigData(short InitAddress, EEPROM_RANGE_ITEM Range)
+int32_t ReadBigData(short InitAddress, EEPROM_RANGE_ITEM Range)
 {
+	
 	uint32_t Value = 0;
 	uint8_t *CompoundNumber;
 	uint8_t RegIndx = 0;
-	if(Range == SINGLE_REGISTER)
+	int8_t RealRange = Range;
+	for(RegIndx = 0; RegIndx < Range; RegIndx++)
+	{
+		Value = EEPROM.read(InitAddress + RegIndx);
+		if(Value == EMPTY_MEMORY_VALUE)
+		{
+			RealRange = RegIndx - 1;
+			Value = 0;
+			break;
+		}
+	}
+	if(RealRange < 0)
+		return -1;
+	if(RealRange == SINGLE_REGISTER)
 		ReadMemory(InitAddress, (short *)&Value);
 	else
 	{
-		for(RegIndx = 0; RegIndx < EepromRangeTab[Range].NumReg; RegIndx++)
+		for(RegIndx = 0; RegIndx < EepromRangeTab[RealRange].NumReg; RegIndx++)
 		{
-			ReadMemory(InitAddress + RegIndx, (short*)CompoundNumber[RegIndx]);
+			ReadMemory(InitAddress + RegIndx, (short)CompoundNumber[RegIndx]);
 			if(RegIndx == 0)
-				Value = CompoundNumber[RegIndx] * (EepromRangeTab[Range].MaxValue);
-			else if(RegIndx < (EepromRangeTab[Range].NumReg - 1))
-				Value += CompoundNumber[RegIndx] * (EepromRangeTab[Range].MaxValue / (10 * RegIndx));
+				Value = CompoundNumber[RegIndx] * (EepromRangeTab[RealRange].MaxValue);
+			else if(RegIndx < (EepromRangeTab[RealRange].NumReg - 1))
+				Value += CompoundNumber[RegIndx] * (EepromRangeTab[RealRange].MaxValue / (10 * RegIndx));
 			else
 				Value += CompoundNumber[RegIndx];
 		}
