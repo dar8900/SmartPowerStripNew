@@ -146,17 +146,14 @@ void setup()
 	pinMode(RELE_8, OUTPUT);
 	Wire.onReceive(WichInfo);
 	Wire.onRequest(SendInfo);
-	// TempReadedEnergy = ReadBigData(ENERGY_VALUE_INIT_ADDR, NINE_REG);
 #ifdef DEBUG_SERIAL
-	if(TempReadedEnergy > 100000)
-	{
-		TempReadedEnergy = 0;
-		// WriteBigData(ENERGY_VALUE_INIT_ADDR, (uint32_t)TempReadedEnergy);
-		// TempReadedEnergy = ReadBigData(ENERGY_VALUE_INIT_ADDR, NINE_REG);
-	}
+	if(!IsMemoryEmpty())
+		ClearMemory();
+	WriteBigData(ENERGY_VALUE_INIT_ADDR, 3450); // 0.5mA * 230 * 30s
+    TempReadedEnergy = ReadBigData(ENERGY_VALUE_INIT_ADDR, NINE_REG);
 	Serial.print("Energia registrata: ");
 	Serial.println(TempReadedEnergy);
-	delay(3000);
+	delay(30000);
 #endif
 	TurnOffRele();
 	// if(TempReadedEnergy > 0)

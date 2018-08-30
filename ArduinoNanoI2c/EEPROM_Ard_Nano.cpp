@@ -95,7 +95,7 @@ int32_t ReadBigData(short InitAddress, EEPROM_RANGE_ITEM Range)
 	uint8_t *CompoundNumber;
 	uint8_t RegIndx = 0;
 	int8_t RealRange = Range;
-	for(RegIndx = 0; RegIndx < Range; RegIndx++)
+	for(RegIndx = 0; RegIndx < EepromRangeTab[Range].NumReg; RegIndx++)
 	{
 		Value = EEPROM.read(InitAddress + RegIndx);
 		if(Value == EMPTY_MEMORY_VALUE)
