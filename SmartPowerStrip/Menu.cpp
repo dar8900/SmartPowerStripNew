@@ -1486,23 +1486,6 @@ bool ChangeTariff()
 				Cursor++;
 				if(Cursor > 3)
 					Cursor = 0;
-				switch(Cursor)
-				{
-					case 0:
-						LCDMoveCursor(THREE, 9);
-						break;
-					case 1: 
-						LCDMoveCursor(THREE, 10);
-						break;
-					case 2:
-						LCDMoveCursor(THREE, 11);
-						break;
-					case 3:
-						LCDMoveCursor(THREE, 12);
-						break;
-					default:
-						break;
-				}
 				ExitCnt++;
 				break;
 			case BUTTON_SET:
@@ -1523,10 +1506,27 @@ bool ChangeTariff()
 			default:
 				break;			
 		}
+		switch(Cursor)
+		{
+			case 0:
+				LCDMoveCursor(THREE, 9);
+				break;
+			case 1: 
+				LCDMoveCursor(THREE, 10);
+				break;
+			case 2:
+				LCDMoveCursor(THREE, 11);
+				break;
+			case 3:
+				LCDMoveCursor(THREE, 12);
+				break;
+			default:
+				break;
+		}
 		CycleTimer++;
 		if(CycleTimer == (WHILE_LOOP_DELAY * 134))
 			CycleTimer = 0;
-		if(CycleTimer >= (WHILE_LOOP_DELAY * 64) && ExitCnt == OldExitCnt)
+		if(CycleTimer == (WHILE_LOOP_DELAY * 64) && ExitCnt == OldExitCnt)
 			ExitCnt = 0;
 		if(ExitCnt == (WHILE_LOOP_DELAY * 134))
 		{
@@ -1546,7 +1546,7 @@ bool ChangeTariff()
 			ExitChangeTariff = true;
 		}			
 		OldExitCnt = ExitCnt;
-		delay(WHILE_LOOP_DELAY*4); // 120ms per il blink
+		delay(WHILE_LOOP_DELAY * 4); // 120ms per il blink
 	}
 	
 }
