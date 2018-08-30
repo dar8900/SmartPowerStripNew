@@ -7,7 +7,7 @@
 #define NO_DATA	30
 
 #undef DEBUG_SERIAL
-
+#undef CLEAR_MEMORY
 typedef enum
 {
 	BUTTON_UP = 0,

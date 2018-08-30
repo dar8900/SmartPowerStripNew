@@ -131,7 +131,7 @@ bool ClearMemory()
 	// Tempo di cancellazione massimo 3.3 s
 	for(short i = 0; i < MAX_EEPROM_DIM; i++)
 	{
-		EEPROM.update(i, EMPTY_MEMORY_VALUE);
+		EEPROM.write(i, EMPTY_MEMORY_VALUE);
 	}
 	return true;
 }

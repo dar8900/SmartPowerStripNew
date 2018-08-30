@@ -123,7 +123,7 @@ static void SendInfo()
 static void BlinkLed(short pin)
 {
 	ON(pin);
-	delay(5);
+	delay(100);
 	OFF(pin);	
 }
 
@@ -146,18 +146,16 @@ void setup()
 	pinMode(RELE_8, OUTPUT);
 	Wire.onReceive(WichInfo);
 	Wire.onRequest(SendInfo);
-#ifdef DEBUG_SERIAL
+#ifdef CLEAR_MEMORY
 	if(!IsMemoryEmpty())
+	{
 		ClearMemory();
-	WriteBigData(ENERGY_VALUE_INIT_ADDR, 3450); // 0.5mA * 230 * 30s
-    TempReadedEnergy = ReadBigData(ENERGY_VALUE_INIT_ADDR, NINE_REG);
-	Serial.print("Energia registrata: ");
-	Serial.println(TempReadedEnergy);
-	delay(30000);
+		Serial.println("Memoria vuota");
+	}
+	else
+		Serial.print("Memoria vuota iniziale");
 #endif
 	TurnOffRele();
-	// if(TempReadedEnergy > 0)
-		// EnergyMeasured = (float) TempReadedEnergy;
 	CurrentCalibration();
 }
 
