@@ -42,6 +42,7 @@ typedef struct
 	bool WifiActive;
 	bool WifiReconnect;
 	bool WpsConfigSelected;
+	bool ConnectionSelected;
 	bool ClientConnected;
 	bool AllReleDown;
 	bool AllReleUp;

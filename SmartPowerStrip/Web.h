@@ -27,6 +27,7 @@ typedef enum
 {
 	WPS = 0,
 	CABLATA,
+	CONN_NOT_SETTED,
 	MAX_WIFI_CONFIG
 }WIFI_CONFIG;
 

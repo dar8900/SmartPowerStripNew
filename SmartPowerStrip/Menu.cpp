@@ -230,8 +230,7 @@ void MainScreen(short EnterSetup)
 		LCDPrintString(TWO, CENTER_ALIGN, "Prese attive:");
 		ShowReleIcons(THREE);
 		// Stato wifi
-		LCDPrintString(FOUR, LEFT_ALIGN, "Stato Wifi: ");
-		ShowWifiStatus(FOUR, 14, Flag.WifiActive);
+		ShowWifiStatus(ONE, 7, Flag.WifiActive);
 		ScreenTimerRefresh();
 	}
 	if(EnterSetup == BUTTON_SET)
@@ -315,6 +314,7 @@ void MainMenu()
 				ShowClientConnected(ONE, 9, false);
 			}
 		}
+		ShowWifiStatus(ONE, 7, Flag.WifiActive);
 		LCDPrintString(THREE, CENTER_ALIGN, MainMenuItems[Item].MenuTitle);
 
 		ButtonPress = CheckButtons();
@@ -611,6 +611,7 @@ bool ManualRele()
 							delay(DELAY_INFO_MSG);
 							ClearLCD();
 							ReleSetted = true;
+							break;
 						default:
 							break;
 					}
@@ -732,10 +733,11 @@ bool WifiConnect()
 {
 	bool WifiDisconnectChoice = false, WpsChoice = false, WpsConfStart = false, WpsSuccess = false;
 	uint8_t ButtonPress = NO_PRESS;
+	short ConnectionSetted = 0;
 	if(Flag.WifiActive)
 	{
 		if(!Flag.WpsConfigSelected)
-			{
+		{
 			ClearLCD();
 			LCDPrintString(ONE, CENTER_ALIGN, "Sei ancora connesso");
 			LCDPrintString(TWO, CENTER_ALIGN, "ad una rete WiFi!");
@@ -762,26 +764,45 @@ bool WifiConnect()
 	else
 	{
 		ClearLCD();
-		LCDPrintString(TWO, CENTER_ALIGN, "Connettere tramite");
-		LCDPrintString(THREE, CENTER_ALIGN, "WPS?");
-		delay(DELAY_INFO_MSG);
-#ifdef WPS_CONNECTION
-		WpsChoice = CheckYesNo();
-#endif
-		if(WpsChoice)
+		ReadMemory(WIFI_WPS_CONF_ADDR, &ConnectionSetted);
+		switch(ConnectionSetted)
 		{
-			WpsSuccess = WPSConnection();
-			CheckEvents();
-			if(WpsSuccess)
-				WebServerInit();
-		}
-		else
-		{
-			WifiWiredConnections();
-			if(Flag.WifiActive)
-			{
-				WebServerInit();
-			}
+			case CONN_NOT_SETTED:
+				LCDPrintString(TWO, CENTER_ALIGN, "Connettere tramite");
+				LCDPrintString(THREE, CENTER_ALIGN, "WPS?");
+				delay(DELAY_INFO_MSG);
+				WpsChoice = CheckYesNo();
+				if(WpsChoice)
+				{
+					WpsSuccess = WPSConnection();
+					CheckEvents();
+					if(WpsSuccess)
+						WebServerInit();
+				}
+				else
+				{
+					WifiWiredConnections();
+					if(Flag.WifiActive)
+					{
+						WebServerInit();
+					}
+				}				
+				break;
+			case WPS:
+				WpsSuccess = WPSConnection();
+				CheckEvents();
+				if(WpsSuccess)
+					WebServerInit();				
+				break;
+			case CABLATA:
+				WifiWiredConnections();
+				if(Flag.WifiActive)
+				{
+					WebServerInit();
+				}				
+				break;
+			default:
+				break;
 		}
 	}
 	return true;
@@ -826,8 +847,8 @@ bool HelpInfo()
 			break;
 		LCDPrintString(ONE, CENTER_ALIGN, "Stato Prese:");
 		ShowReleIcons(TWO);
-		LCDPrintString(THREE, CENTER_ALIGN, "Stato Wifi: ");
-		ShowWifiStatus(THREE, 16, Flag.WifiActive);
+		LCDPrintString(THREE, CENTER_ALIGN, "Stato Wifi:");
+		ShowWifiStatus(FOUR, CENTER_ALIGN, (Flag.WifiActive) ? "Attivo" : "Spento");
 		delay(DELAY_INFO_MSG);
 		CheckEvents();
 		if(BackPressed())

@@ -61,55 +61,88 @@ void WifiConfInit()
 	uint8_t ButtonPress = NO_PRESS;
 	short WifiConfigItem = WPS;
 	bool ExitWifiConfInit = false;
-	ClearLCD();
-	LCDPrintString(ONE, CENTER_ALIGN, "Quale configurazione");
-	LCDPrintString(TWO, CENTER_ALIGN, "WiFi usare?");
-	while(!ExitWifiConfInit)
+	short ConnectionSetted = 0;
+	ReadMemory(WIFI_WPS_CONF_ADDR, &ConnectionSetted);
+	if(ConnectionSetted == WPS)
 	{
-		LCDPrintString(THREE, CENTER_ALIGN, WifiConfigName[WifiConfigItem]);
-		ButtonPress = CheckButtons();
-		switch(ButtonPress)
+		Flag.WpsConfigSelected = true;
+		Flag.ConnectionSelected = true;
+		EepromUpdate(WIFI_WPS_CONF_ADDR, WPS);
+		ClearLCD();
+		LCDPrintString(TWO, CENTER_ALIGN, "WPS settato");
+		delay(DELAY_INFO_MSG);				
+	}
+	else if(ConnectionSetted == CABLATA)
+	{
+		Flag.WpsConfigSelected = false;
+		Flag.ConnectionSelected = true;
+		EepromUpdate(WIFI_WPS_CONF_ADDR, CABLATA);
+		ClearLCD();
+		LCDPrintString(TWO, CENTER_ALIGN, "Cablato settato");
+		delay(DELAY_INFO_MSG);		
+	}
+	else
+	{
+		ClearLCD();
+		LCDPrintString(ONE, CENTER_ALIGN, "Quale configurazione");
+		LCDPrintString(TWO, CENTER_ALIGN, "WiFi usare?");
+		while(!ExitWifiConfInit)
 		{
-			case BUTTON_UP:
-				if(WifiConfigItem > WPS)
-					WifiConfigItem--;
-				else
-					WifiConfigItem = MAX_WIFI_CONFIG - 1;
-				ClearLCDLine(THREE);
-				break;
-			case BUTTON_DOWN:
-				if(WifiConfigItem < MAX_WIFI_CONFIG - 1)
-					WifiConfigItem++;
-				else
-					WifiConfigItem = WPS;
-				ClearLCDLine(THREE);
-				break;
-			case BUTTON_LEFT:
-				break;
-			case BUTTON_SET:
-				if(WifiConfigItem == WPS)
-				{
-					Flag.WpsConfigSelected = true;
-					EepromUpdate(WIFI_WPS_CONF_ADDR, WPS);
-					ClearLCD();
-					LCDPrintString(TWO, CENTER_ALIGN, "WPS settato");
-					delay(DELAY_INFO_MSG);
-					ClearLCDLine(TWO);
+			LCDPrintString(THREE, CENTER_ALIGN, WifiConfigName[WifiConfigItem]);
+			ButtonPress = CheckButtons();
+			switch(ButtonPress)
+			{
+				case BUTTON_UP:
+					if(WifiConfigItem > WPS)
+						WifiConfigItem--;
+					else
+						WifiConfigItem = MAX_WIFI_CONFIG - 1;
+					ClearLCDLine(THREE);
+					break;
+				case BUTTON_DOWN:
+					if(WifiConfigItem < MAX_WIFI_CONFIG - 1)
+						WifiConfigItem++;
+					else
+						WifiConfigItem = WPS;
+					ClearLCDLine(THREE);
+					break;
+				case BUTTON_LEFT:
 					ExitWifiConfInit = true;
-				}
-				else
-				{
-					Flag.WpsConfigSelected = false;
-					EepromUpdate(WIFI_WPS_CONF_ADDR, CABLATA);
 					ClearLCD();
-					LCDPrintString(TWO, CENTER_ALIGN, "Cablato settato");
+					LCDPrintString(TWO, CENTER_ALIGN, "Non settata");
 					delay(DELAY_INFO_MSG);
-					ClearLCDLine(TWO);
-					ExitWifiConfInit = true;
-				}
-				break;
+					ClearLCD();
+					WifiTurnOff();
+					EepromUpdate(WIFI_WPS_CONF_ADDR, CONN_NOT_SETTED);
+					Flag.ConnectionSelected = false;
+					break;
+				case BUTTON_SET:
+					if(WifiConfigItem == WPS)
+					{
+						Flag.WpsConfigSelected = true;
+						Flag.ConnectionSelected = true;
+						EepromUpdate(WIFI_WPS_CONF_ADDR, WPS);
+						ClearLCD();
+						LCDPrintString(TWO, CENTER_ALIGN, "WPS settato");
+						delay(DELAY_INFO_MSG);
+						ClearLCDLine(TWO);
+						ExitWifiConfInit = true;
+					}
+					else
+					{
+						Flag.WpsConfigSelected = false;
+						Flag.ConnectionSelected = true;
+						EepromUpdate(WIFI_WPS_CONF_ADDR, CABLATA);
+						ClearLCD();
+						LCDPrintString(TWO, CENTER_ALIGN, "Cablato settato");
+						delay(DELAY_INFO_MSG);
+						ClearLCDLine(TWO);
+						ExitWifiConfInit = true;
+					}
+					break;
+			}
+			delay(WHILE_LOOP_DELAY);
 		}
-		delay(WHILE_LOOP_DELAY);
 	}
 }
 
@@ -117,10 +150,13 @@ void WifiConfInit()
 
 void WifiInit()
 {
-	if(Flag.WpsConfigSelected)
-		WPSConnection();
-	else
-		WifiWiredConnections();
+	if(Flag.ConnectionSelected)
+	{
+		if(Flag.WpsConfigSelected)
+			WPSConnection();
+		else
+			WifiWiredConnections();
+	}
 	return;
 }
 
@@ -189,6 +225,7 @@ bool WPSConnection()
 	LCDPrintString(ONE, CENTER_ALIGN, "Premere Ok");
 	LCDPrintString(TWO, CENTER_ALIGN, "per partire con");
 	LCDPrintString(THREE, CENTER_ALIGN, "la configurazione");
+	LCDPrintString(FOUR, CENTER_ALIGN, "Left per uscire");
 	while(!ExitWpsChoiceConf)
 	{
 		TakePresentTime();
@@ -214,6 +251,7 @@ bool WPSConnection()
 	if(WpsConfStart)
 	{
 		ClearLCD();
+		LCDPrintString(TWO, CENTER_ALIGN, "Connessione in corso");
 		WiFi.mode(WIFI_STA);
 		WpsSuccess = WiFi.beginWPSConfig();
 		delay(3000);
@@ -263,6 +301,7 @@ bool WPSConnection()
 		else
 		{
 			ClearLCD();
+			EepromUpdate(WIFI_WPS_CONF_ADDR, CABLATA);
 			LCDPrintString(ONE, CENTER_ALIGN, "Configurazione WPS");
 			LCDPrintString(TWO, CENTER_ALIGN, "fallita");
 			delay(DELAY_INFO_MSG);
@@ -275,6 +314,7 @@ bool WPSConnection()
 	else
 	{
 		ClearLCD();
+		EepromUpdate(WIFI_WPS_CONF_ADDR, CABLATA);
 		LCDPrintString(ONE, CENTER_ALIGN, "Configurazione WPS");
 		LCDPrintString(TWO, CENTER_ALIGN, "annullata");
 		delay(DELAY_INFO_MSG);
@@ -541,6 +581,7 @@ void WifiScanForSignal()
 		}
 		if(Flag.WifiReconnect)
 		{
+			Flag.WpsConfigSelected = false;
 			WifiInit();
 		}
 
