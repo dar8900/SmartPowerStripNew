@@ -40,6 +40,7 @@ const FORMAT_ENERGY TabFormat[] =
 
 uint16_t TariffaInt;
 float TariffaFloat;
+TARIFF_ITEM Tariffa = {0,0,0,0};
 
 static uint8_t SearchFormatRange(float ValueToFormat)
 {
@@ -271,34 +272,44 @@ bool ShowMeasures()
 	return true;
 }
 
+void SaveTariffValue(int8_t Tariffa[])
+{
+	EepromUpdate(FIRST_TARIFF_NUMBER_ADDR  , Tariffa[0]);
+	EepromUpdate(SECOND_TARIFF_NUMBER_ADDR , Tariffa[1]);
+	EepromUpdate(THIRD_TARIFF_NUMBER_ADDR  , Tariffa[2]);
+	EepromUpdate(FOURTH_TARIFF_NUMBER_ADDR , Tariffa[3]);
+	return;	
+}
+
 
 void LoadTariffValue()
 {
-	uint8_t TariffMemoryAddr = 0;
-	short Tariffa[4];
-	for(TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR; TariffMemoryAddr < (FOURTH_TARIFF_NUMBER_ADDR + 1); TariffMemoryAddr++)
-	{
-		ReadMemory(TariffMemoryAddr, &Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR]);
-	}	
-	TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2] * 10) + (Tariffa[3]);
+	ReadMemory(FIRST_TARIFF_NUMBER_ADDR  , (short*)&Tariffa.FirstNumer );
+	ReadMemory(SECOND_TARIFF_NUMBER_ADDR , (short*)&Tariffa.SecondNumer);
+	ReadMemory(THIRD_TARIFF_NUMBER_ADDR  , (short*)&Tariffa.ThirdNumer );
+	ReadMemory(FOURTH_TARIFF_NUMBER_ADDR , (short*)&Tariffa.FourthNumer);
+	TariffaInt = (Tariffa.FirstNumer * 1000) + (Tariffa.SecondNumer * 100) + (Tariffa.ThirdNumer * 10) + (Tariffa.FourthNumer);
 	TariffaFloat = ((float)TariffaInt) / 100000.0;
+	return;
 }
+
 
 bool ChangeTariff()
 {
 	short ButtonPress = NO_PRESS, TariffStatus = 0;
 	uint8_t TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR;
-	uint16_t CycleTimer = 0, ExitCnt = 0, OldExitCnt = 0;
-	int8_t Tariffa[4] = {0,0,0,0}, Cursor = 0;
+	// uint16_t CycleTimer = 0, ExitCnt = 0, OldExitCnt = 0; // Variabili per uscita da ciclo con left
+	int8_t TariffaArray[4] = {0 ,0 , 0, 0};
+	uint8_t Cursor = 0;
 	String TariffaStr = "0.0";
 	bool ExitChangeTariff = false;
 	ReadMemory(TARIFF_STATUS_ADDR, &TariffStatus);
 	if(TariffStatus == SETTED)
 	{
-		Tariffa[0] = TariffaInt / 1000;
-		Tariffa[1] = (TariffaInt / 100) - ((TariffaInt / 1000) * 10);
-		Tariffa[2] = (TariffaInt / 10) - ((TariffaInt / 100) * 10);
-		Tariffa[3] = (TariffaInt) - ((TariffaInt / 10) * 10);
+		TariffaArray[0] = TariffaInt / 1000;
+		TariffaArray[1] = (TariffaInt / 100) - ((TariffaInt / 1000) * 10);
+		TariffaArray[2] = (TariffaInt / 10) - ((TariffaInt / 100) * 10);
+		TariffaArray[3] = (TariffaInt) - ((TariffaInt / 10) * 10);
 	}
 	ClearLCD();
 	LCDPrintString(TWO, CENTER_ALIGN, "Cambia la tariffa");
@@ -308,27 +319,27 @@ bool ChangeTariff()
 	while(!ExitChangeTariff)
 	{
 		CheckEvents();
-		TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2] * 10) + (Tariffa[3]);
+		TariffaInt = (TariffaArray[0] * 1000) + (TariffaArray[1] * 100) + (TariffaArray[2] * 10) + (TariffaArray[3]);
 		TariffaStr = "0.0" + String(TariffaInt);
 		LCDPrintString(THREE, 6, TariffaStr);
 		ButtonPress = CheckButtons();
 		switch(ButtonPress)
 		{
 			case BUTTON_UP:
-				Tariffa[Cursor]--;
-				if(Tariffa[Cursor] < 0)
-					Tariffa[Cursor] = 9;
+				TariffaArray[Cursor]--;
+				if(TariffaArray[Cursor] < 0)
+					TariffaArray[Cursor] = 9;
 				break;
 			case BUTTON_DOWN:
-				Tariffa[Cursor]++;
-				if(Tariffa[Cursor] > 9)
-					Tariffa[Cursor] = 0;
+				TariffaArray[Cursor]++;
+				if(TariffaArray[Cursor] > 9)
+					TariffaArray[Cursor] = 0;
 				break;
 			case BUTTON_LEFT:
 				Cursor++;
 				if(Cursor > 3)
 					Cursor = 0;
-				ExitCnt++;
+				// ExitCnt++;
 				break;
 			case BUTTON_SET:
 				LCDNoBlink();
@@ -336,11 +347,12 @@ bool ChangeTariff()
 				LCDPrintString(TWO, CENTER_ALIGN, "Tariffa settata");
 				delay(DELAY_INFO_MSG);
 				ClearLCD();
-				for(TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR; TariffMemoryAddr < (FOURTH_TARIFF_NUMBER_ADDR + 1); TariffMemoryAddr++)
-				{
-					EepromUpdate(TariffMemoryAddr, Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR]);
-				}
-				TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2] * 10) + (Tariffa[3]);
+				Tariffa.FirstNumer  = TariffaArray[0];
+				Tariffa.SecondNumer = TariffaArray[1];
+				Tariffa.ThirdNumer  = TariffaArray[2];
+				Tariffa.FourthNumer = TariffaArray[3];
+				SaveTariffValue(TariffaArray);
+				TariffaInt = (TariffaArray[0] * 1000) + (TariffaArray[1] * 100) + (TariffaArray[2] * 10) + (TariffaArray[3]);
 				TariffaFloat = ((float)TariffaInt) / 100000.0;
 				EepromUpdate(TARIFF_STATUS_ADDR, SETTED);
 				ExitChangeTariff = true;
@@ -365,29 +377,29 @@ bool ChangeTariff()
 			default:
 				break;
 		}
-		CycleTimer++;
-		if(CycleTimer == (WHILE_LOOP_DELAY * 134))
-			CycleTimer = 0;
-		if(CycleTimer == (WHILE_LOOP_DELAY * 64) && ExitCnt == OldExitCnt)
-			ExitCnt = 0;
-		if(ExitCnt == (WHILE_LOOP_DELAY * 134))
-		{
-			LCDNoBlink();
-			ClearLCD();
-			LCDPrintString(TWO, CENTER_ALIGN, "Tariffa non settata");
-			delay(DELAY_INFO_MSG);
-			ClearLCD();	
-			TariffaInt = 0;
-			TariffaFloat = 0.0;
-			for(TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR; TariffMemoryAddr < (FOURTH_TARIFF_NUMBER_ADDR + 1); TariffMemoryAddr++)
-			{
-				Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR] = 0;
-				EepromUpdate(TariffMemoryAddr, Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR]);
-			}
-			EepromUpdate(TARIFF_STATUS_ADDR, NOT_SETTED);
-			ExitChangeTariff = true;
-		}			
-		OldExitCnt = ExitCnt;
+		// CycleTimer++;
+		// if(CycleTimer == (WHILE_LOOP_DELAY * 134))
+			// CycleTimer = 0;
+		// if(CycleTimer == (WHILE_LOOP_DELAY * 64) && ExitCnt == OldExitCnt)
+			// ExitCnt = 0;
+		// if(ExitCnt == (WHILE_LOOP_DELAY * 134))
+		// {
+			// LCDNoBlink();
+			// ClearLCD();
+			// LCDPrintString(TWO, CENTER_ALIGN, "Tariffa non settata");
+			// delay(DELAY_INFO_MSG);
+			// ClearLCD();	
+			// TariffaInt = 0;
+			// TariffaFloat = 0.0;
+			// for(TariffMemoryAddr = FIRST_TARIFF_NUMBER_ADDR; TariffMemoryAddr < (FOURTH_TARIFF_NUMBER_ADDR + 1); TariffMemoryAddr++)
+			// {
+				// Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR] = 0;
+				// EepromUpdate(TariffMemoryAddr, Tariffa[TariffMemoryAddr - FIRST_TARIFF_NUMBER_ADDR]);
+			// }
+			// EepromUpdate(TARIFF_STATUS_ADDR, NOT_SETTED);
+			// ExitChangeTariff = true;
+		// }			
+		// OldExitCnt = ExitCnt;
 		delay(WHILE_LOOP_DELAY * 4); // 120ms per il blink
 	}
 	

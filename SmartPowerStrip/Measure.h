@@ -15,6 +15,14 @@ typedef struct
 	String   Prefix;
 }FORMAT_ENERGY;
 
+typedef struct
+{
+	int8_t FirstNumer;
+	int8_t SecondNumer;
+	int8_t ThirdNumer;
+	int8_t FourthNumer;
+}TARIFF_ITEM;
+
 typedef enum
 {
 	WATT_ORA = 0,
@@ -52,6 +60,7 @@ typedef enum
 bool ChangeUdmEnergy(void);
 bool ShowMeasures(void);
 bool ChangeTariff(void);
+void SaveTariffValue(int8_t Tariffa[]);
 void LoadTariffValue(void);
 
 #endif

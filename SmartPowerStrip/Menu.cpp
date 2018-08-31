@@ -17,12 +17,12 @@ extern FLAGS Flag;
 extern String HostName;
 extern String VersionValue;
 extern String VersionDate;
+extern uint16_t TariffaInt;
+extern float TariffaFloat;
 
 uint16_t TimerRefreshMenu;
 short TimerClientConnected = DELAY_CLIENT_CONNECTION;
 bool ExitFromBand = true;
-extern uint16_t TariffaInt;
-extern float TariffaFloat;
 
 static const String ONOFF[] = {"Off", "On"};
 
@@ -915,6 +915,13 @@ bool HelpInfo()
 		delay(DELAY_INFO_MSG);
 		if(BackPressed())
 			break;
+		ClearLCD();
+		LCDPrintString(TWO, CENTER_ALIGN, "Tariffa E/kWh");
+		LCDPrintString(THREE, CENTER_ALIGN, String(TariffaFloat));
+		if(BackPressed())
+			break;	
+		delay(DELAY_INFO_MSG);
+		CheckEvents();	
 		ClearLCD();
 		CheckEvents();
 		LCDPrintString(ONE, CENTER_ALIGN, "Versione Firmware:");
