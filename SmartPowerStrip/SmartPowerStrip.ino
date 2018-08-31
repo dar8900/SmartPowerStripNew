@@ -10,6 +10,7 @@
 #include "Band.h"
 #include "Rele.h"
 #include "I2CNano.h"
+#include "Reset.h"
 
 
 #undef FIRST_GO
@@ -94,8 +95,8 @@ uint8_t EmptyIcon[]
 FLAGS Flag;
 short EnterSetup;
 
-String VersionValue = "2.8";
-String VersionDate  = "29/08/18";
+String VersionValue = "2.9";
+String VersionDate  = "30/08/18";
 String ModelNumber  = "001";
 
 void BlinkLed(short pin)
@@ -119,46 +120,17 @@ void CheckEvents()
 		WifiScanForSignal();
 }
 
-void RestartESP()
-{
-	ClearLCD();
-	LCDPrintString(TWO, CENTER_ALIGN, "Restart in corso");
-	LCDPrintString(THREE, CENTER_ALIGN, "attendere...");
-	delay(DELAY_MENU_MSG);
-	ClearLCD();
-	ESP.restart();
-}
-
-
-void Reset2Factory()
-{
-	ClearLCD();
-	LCDPrintString(ONE, CENTER_ALIGN, "Reset a default");
-	LCDPrintString(TWO, CENTER_ALIGN, "in corso");
-	LCDPrintString(TWO, CENTER_ALIGN, "attendere...");
-	delay(DELAY_MENU_MSG);
-	ClearLCD();
-	WriteMemory(FACTORY_RESET_ADDR, 1);
-	ESP.restart();
-}
 
 bool IsBackToDefault()
 {
 	bool BackToDefault = false;
 	short ResetValue = 0;
 	ReadMemory(FACTORY_RESET_ADDR, &ResetValue);
-	if(ResetValue == 1)
-	{
+	if(ResetValue == DEFAULT_RESET)
 		BackToDefault = true;
-		ResetValue = 0;
-		WriteMemory(FACTORY_RESET_ADDR, ResetValue);
-	}
 	else
-	{
 		BackToDefault = false;
-		EepromUpdate(FACTORY_RESET_ADDR, 0);
-	}
-
+	EepromUpdate(FACTORY_RESET_ADDR, NOT_DEFAULT_RESET);
 	return BackToDefault;
 }
 
@@ -179,10 +151,12 @@ void setup()
 	Wire.begin(SDA_PIN, SCL_PIN); // Inizializza I2C per NodeMCU
 	EepromInit();
 	LCDInit();
-	
 	RTCInit();
+	while(!FirstResetEnergy())
+	{
+		delay(WHILE_LOOP_DELAY);
+	}
 	LCDShowSplashScreen("Smart Power Strip", "HomeMicroTech", String("Modello: " + ModelNumber));
-	FirstResetEnergy();
 	WifiConfInit();
 	WifiInit();
 	if(Flag.WifiActive)

@@ -50,8 +50,6 @@ typedef struct
 }FLAGS;
 
 
-void RestartESP(void);
-void Reset2Factory(void);
 bool IsBackToDefault(void);
 void BlinkLed(short pin);
 void CheckEvents(void);
