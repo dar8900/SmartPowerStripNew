@@ -148,14 +148,16 @@ void setup()
 	pinMode(RELE8, OUTPUT);
 	pinMode(BUTTON_LED, OUTPUT);
 	short FirstStart = 0;
+	// bool FirstResetEnergyConfirm = false;
 	Wire.begin(SDA_PIN, SCL_PIN); // Inizializza I2C per NodeMCU
 	EepromInit();
 	LCDInit();
 	RTCInit();
-	while(!FirstResetEnergy())
-	{
-		delay(WHILE_LOOP_DELAY);
-	}
+	// while(!FirstResetEnergyConfirm)
+	// {
+		// delay(200);
+		// FirstResetEnergyConfirm = FirstResetEnergy();
+	// }
 	LCDShowSplashScreen("Smart Power Strip", "HomeMicroTech", String("Modello: " + ModelNumber));
 	WifiConfInit();
 	WifiInit();

@@ -58,7 +58,7 @@ bool RestartEsp()
 bool ResetEnergy()
 {
 	bool Reset = false, ConfirmReset = false;
-	uint8_t ConfirmTimer = 5;
+	// uint8_t ConfirmTimer = 5;
 	ClearLCD();
 	LCDPrintString(TWO, CENTER_ALIGN, "Resettare il valore");
 	LCDPrintString(THREE, CENTER_ALIGN, "dell'energia?");
@@ -67,14 +67,8 @@ bool ResetEnergy()
 	{
 		while(!ConfirmReset)
 		{
+			delay(200);
 			ConfirmReset = SendCommand(RESET_ENERGY);
-			ConfirmTimer--;
-			delay(WHILE_LOOP_DELAY);
-			if(ConfirmTimer == 0)
-			{
-				ConfirmReset = false;
-				break;
-			}
 		}
 	}
 	if(ConfirmReset)
