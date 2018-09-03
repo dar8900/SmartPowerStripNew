@@ -96,8 +96,8 @@ uint8_t EmptyIcon[]
 FLAGS Flag;
 short EnterSetup;
 
-String VersionValue = "2.9";
-String VersionDate  = "30/08/18";
+String VersionValue = "3.0";
+String VersionDate  = "3/9/18";
 String ModelNumber  = "001";
 
 void BlinkLed(short pin)

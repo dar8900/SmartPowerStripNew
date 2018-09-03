@@ -53,6 +53,7 @@ const String WifiConfigName[]
 {
 	"WPS"	    ,
 	"Cablata"	,
+	"Nessuna"   ,
 };
 
 
@@ -128,7 +129,7 @@ void WifiConfInit()
 						ClearLCDLine(TWO);
 						ExitWifiConfInit = true;
 					}
-					else
+					else if(WifiConfigItem == CABLATA)
 					{
 						Flag.WpsConfigSelected = false;
 						Flag.ConnectionSelected = true;
@@ -138,6 +139,17 @@ void WifiConfInit()
 						delay(DELAY_INFO_MSG);
 						ClearLCDLine(TWO);
 						ExitWifiConfInit = true;
+					}
+					else
+					{
+						Flag.WpsConfigSelected = false;
+						Flag.ConnectionSelected = false;
+						EepromUpdate(WIFI_WPS_CONF_ADDR, CONN_NOT_SETTED);
+						ClearLCD();
+						LCDPrintString(TWO, CENTER_ALIGN, "Non settata");
+						delay(DELAY_INFO_MSG);
+						ClearLCDLine(TWO);
+						ExitWifiConfInit = true;						
 					}
 					break;
 			}

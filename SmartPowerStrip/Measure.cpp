@@ -151,7 +151,7 @@ bool ShowMeasures()
 	}
 	while(!ExitShowEnergy)
 	{
-		TimeExecShowMeasure = millis();
+		// TimeExecShowMeasure = millis();
 		if(!CurrentOrPower)
 			LCDPrintString(ONE, CENTER_ALIGN, "Corrente Misurata:");
 		else
@@ -259,11 +259,10 @@ bool ShowMeasures()
 		}
 		delay(10);
 		TimerSwitchMeasure++;
-		TimeExecShowMeasure = millis() - TimeExecShowMeasure;
-		if(TimerSwitchMeasure == (10000 / TimeExecShowMeasure))
+		// TimeExecShowMeasure = millis() - TimeExecShowMeasure;
+		if(TimerSwitchMeasure == 300)
 		{
-			ClearLCDLine(ONE);
-			ClearLCDLine(THREE);
+			ClearLCD();
 			TimerSwitchMeasure = 0;
 			CurrentOrPower = !CurrentOrPower;
 			EnergyOrEuro = !EnergyOrEuro;

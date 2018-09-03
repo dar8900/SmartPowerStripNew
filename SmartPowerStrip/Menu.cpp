@@ -366,6 +366,7 @@ bool Setup()
 	{
 		CheckEvents();
 		ShowDateTime(ONE);
+		ShowWifiStatus(ONE, 7, Flag.WifiActive);
 		if(Flag.ClientConnected)
 		{
 			TimerClientConnected--;
@@ -704,6 +705,14 @@ bool WifiConnect()
 			ClearLCD();
 			if(WifiDisconnectChoice)
 				WifiDisconnect();
+			ClearLCD();
+			LCDPrintString(ONE, CENTER_ALIGN, "Vuoi de-selezionare");
+			LCDPrintString(TWO, CENTER_ALIGN, "l'attuale metodo");
+			LCDPrintString(THREE, CENTER_ALIGN, "di connessione?");
+			CheckEvents();
+			if(CheckYesNo())
+				EepromUpdate(WIFI_WPS_CONF_ADDR, CONN_NOT_SETTED);
+			ClearLCD();
 		}
 		else
 		{
@@ -715,7 +724,15 @@ bool WifiConnect()
 			WifiDisconnectChoice = CheckYesNo();
 			ClearLCD();
 			if(WifiDisconnectChoice)
-				WifiTurnOff();			
+				WifiTurnOff();	
+			ClearLCD();
+			LCDPrintString(ONE, CENTER_ALIGN, "Vuoi de-selezionare");
+			LCDPrintString(TWO, CENTER_ALIGN, "l'attuale metodo");
+			LCDPrintString(THREE, CENTER_ALIGN, "di connessione?");
+			CheckEvents();
+			if(CheckYesNo())
+				EepromUpdate(WIFI_WPS_CONF_ADDR, CONN_NOT_SETTED);
+			ClearLCD();			
 		}
 	}
 	else
@@ -788,7 +805,7 @@ static bool BackPressed()
 bool HelpInfo()
 {
 	uint8_t NumTimer = 0, ReleIndx = 0, ReleTimer[2];
-	String BandTime1, BandTime2, Hour, Minute, Day, Second, TotalTime;
+	String BandTime1, BandTime2, Hour, Minute, Day, Second, TotalTime, TariffStr;
 	bool NoTimer = true;
 	CheckEvents();
 	ClearLCD();
@@ -805,7 +822,7 @@ bool HelpInfo()
 		LCDPrintString(ONE, CENTER_ALIGN, "Stato Prese:");
 		ShowReleIcons(TWO);
 		LCDPrintString(THREE, CENTER_ALIGN, "Stato Wifi:");
-		ShowWifiStatus(FOUR, CENTER_ALIGN, (Flag.WifiActive) ? "Attivo" : "Spento");
+		LCDPrintString(FOUR, CENTER_ALIGN, (Flag.WifiActive) ? "Attivo" : "Non connesso");
 		delay(DELAY_INFO_MSG);
 		CheckEvents();
 		if(BackPressed())
@@ -916,8 +933,9 @@ bool HelpInfo()
 		if(BackPressed())
 			break;
 		ClearLCD();
+		TariffStr = "0.0" + String(TariffaInt); 
 		LCDPrintString(TWO, CENTER_ALIGN, "Tariffa E/kWh");
-		LCDPrintString(THREE, CENTER_ALIGN, String(TariffaFloat));
+		LCDPrintString(THREE, CENTER_ALIGN, TariffStr);
 		if(BackPressed())
 			break;	
 		delay(DELAY_INFO_MSG);

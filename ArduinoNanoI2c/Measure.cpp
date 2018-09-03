@@ -108,6 +108,6 @@ bool ResetEnergies()
 	EnergyMeasured = 0.0;	
 	EnergyAccCnt = 0;
 	EnergyAcc = 0.0;
-	CurrentCalibration();
+	// CurrentCalibration();
 	return true;
 }
