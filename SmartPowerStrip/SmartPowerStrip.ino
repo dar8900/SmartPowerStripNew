@@ -11,6 +11,7 @@
 #include "Rele.h"
 #include "I2CNano.h"
 #include "Reset.h"
+#include "Measure.h"
 
 
 #undef FIRST_GO
@@ -188,6 +189,7 @@ void setup()
 		LCDDisplayOn();
 		Flag.IsDisplayOn = true;
 		ReleInit(true);
+		EepromUpdate(TARIFF_STATUS_ADDR, NOT_SETTED);
 	}
 	else
 	{

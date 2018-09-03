@@ -65,11 +65,8 @@ bool ResetEnergy()
 	Reset = CheckYesNo();
 	if(Reset)
 	{
-		while(!ConfirmReset)
-		{
-			delay(200);
-			ConfirmReset = SendCommand(RESET_ENERGY);
-		}
+		ConfirmReset = SendCommand(RESET_ENERGY);
+		delay(300);
 	}
 	if(ConfirmReset)
 	{

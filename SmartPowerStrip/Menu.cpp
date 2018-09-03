@@ -86,13 +86,13 @@ void MenuInit()
 	LCDPrintString(THREE, CENTER_ALIGN, TimerDalays[Delay].DelayStr);
 	delay(DELAY_MENU_MSG);
 	ClearLCD();
-	// if(TariffStatus != SETTED)
-	// {
-		// EepromUpdate(TARIFF_STATUS_ADDR, NOT_SETTED);
-		// ChangeTariff();
-	// }
-	// else
-		// LoadTariffValue();
+	if(TariffStatus != SETTED)
+	{
+		EepromUpdate(TARIFF_STATUS_ADDR, NOT_SETTED);
+		ChangeTariff();
+	}
+	else
+		LoadTariffValue();
 	return;
 }
 

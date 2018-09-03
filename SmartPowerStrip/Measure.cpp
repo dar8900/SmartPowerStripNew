@@ -284,11 +284,12 @@ void SaveTariffValue(int8_t Tariffa[])
 
 void LoadTariffValue()
 {
-	ReadMemory(FIRST_TARIFF_NUMBER_ADDR  , (short*)&Tariffa.FirstNumer );
-	ReadMemory(SECOND_TARIFF_NUMBER_ADDR , (short*)&Tariffa.SecondNumer);
-	ReadMemory(THIRD_TARIFF_NUMBER_ADDR  , (short*)&Tariffa.ThirdNumer );
-	ReadMemory(FOURTH_TARIFF_NUMBER_ADDR , (short*)&Tariffa.FourthNumer);
-	TariffaInt = (Tariffa.FirstNumer * 1000) + (Tariffa.SecondNumer * 100) + (Tariffa.ThirdNumer * 10) + (Tariffa.FourthNumer);
+	short Tariffa[4];
+	ReadMemory(FIRST_TARIFF_NUMBER_ADDR  , &Tariffa[0]);
+	ReadMemory(SECOND_TARIFF_NUMBER_ADDR , &Tariffa[1]);
+	ReadMemory(THIRD_TARIFF_NUMBER_ADDR  , &Tariffa[2]);
+	ReadMemory(FOURTH_TARIFF_NUMBER_ADDR , &Tariffa[3]);
+	TariffaInt = (Tariffa[0] * 1000) + (Tariffa[1] * 100) + (Tariffa[2]* 10) + (Tariffa[3]);
 	TariffaFloat = ((float)TariffaInt) / 100000.0;
 	return;
 }
@@ -347,10 +348,6 @@ bool ChangeTariff()
 				LCDPrintString(TWO, CENTER_ALIGN, "Tariffa settata");
 				delay(DELAY_INFO_MSG);
 				ClearLCD();
-				Tariffa.FirstNumer  = TariffaArray[0];
-				Tariffa.SecondNumer = TariffaArray[1];
-				Tariffa.ThirdNumer  = TariffaArray[2];
-				Tariffa.FourthNumer = TariffaArray[3];
 				SaveTariffValue(TariffaArray);
 				TariffaInt = (TariffaArray[0] * 1000) + (TariffaArray[1] * 100) + (TariffaArray[2] * 10) + (TariffaArray[3]);
 				TariffaFloat = ((float)TariffaInt) / 100000.0;
