@@ -18,6 +18,8 @@ extern String		EnergyStr;
 extern String		CurrentStr;
 extern String       PowerStr;
 
+extern EEPROM_DATA EepromTab[];
+
 static bool ChekButtons()
 {
 	short ButtonUp = LOW, ButtonDown = LOW, ButtonLeft = LOW, Buttonset = LOW, Press = false;
@@ -177,9 +179,8 @@ void loop()
 		Serial.println(TimeExecEnergy);
 #endif
 	}	
-	// if(Tick10Min == (SECOND(60) / TimeExecEnergy))
-	// {
-		// Tick10Min = 0;
-		// WriteBigData(ENERGY_VALUE_INIT_ADDR, (uint32_t)EnergyMeasured);
-	// }
+	if(Tick10Min == (SECOND(60) / TimeExecEnergy))
+	{
+		WriteBigData(EepromTab, ENERGY_VALUE);
+	}
 }
