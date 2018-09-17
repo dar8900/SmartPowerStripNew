@@ -160,6 +160,11 @@ void setup()
 		// FirstResetEnergyConfirm = FirstResetEnergy();
 	// }
 	LCDShowSplashScreen("Smart Power Strip", "HomeMicroTech", String("Modello: " + ModelNumber));
+	LCDPrintString(ONE, CENTER_ALIGN, "Versione Firmware:");
+	LCDPrintString(TWO, CENTER_ALIGN, String(VersionValue));
+	LCDPrintString(THREE, CENTER_ALIGN, "Data rilascio:");
+	LCDPrintString(FOUR, CENTER_ALIGN, String(VersionDate));
+	delay(1000);
 	WifiConfInit();
 	WifiInit();
 	if(Flag.WifiActive)
