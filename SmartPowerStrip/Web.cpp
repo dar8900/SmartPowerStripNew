@@ -11,6 +11,8 @@
 #include "TimeLib.h"
 #include "I2CNano.h"
 
+#include "fauxmoESP.h"
+
 #include "WebHandleFunctions.h"
 
 #define TIMER_SCAN_WIFI		7500 // circa 16 s
@@ -28,6 +30,8 @@ short MyConnectionNumber;
 uint16_t TimerScanWifi = TIMER_SCAN_WIFI;
 // WiFiServer ClientServer(80);
 
+fauxmoESP fauxmo;
+
 const WIFI_LIST MyNetworkList[] =
 {
 	{"No Conn."     , "password"							, "NoConn" 					},
@@ -39,7 +43,7 @@ const WIFI_LIST MyNetworkList[] =
 };
 
 
-const String NetworkName[]
+const String NetworkName[] = 
 {
 	"Dario Cell"	,
 	"Wifi Nonna"	,
@@ -49,12 +53,60 @@ const String NetworkName[]
 };
 
 
-const String WifiConfigName[]
+const String WifiConfigName[] = 
 {
 	"WPS"	    ,
 	"Cablata"	,
 	"Nessuna"   ,
 };
+
+const char *ReleName[] =
+{
+	"Presa 1" ,
+	"Presa 2" ,
+	"Presa 3" ,
+	"Presa 4" ,
+	"Presa 5" ,
+	"Presa 6" ,
+	"Presa 7" ,
+	"Presa 8" ,	
+};
+
+
+void AlexaActive(bool Actived)
+{
+	uint8_t ReleIndex = 0;
+	if(Actived)
+	{
+		fauxmo.enable(true);
+		// Add virtual devices
+		for(ReleIndex = 0; ReleIndex < RELE_MAX; ReleIndex++)
+		{
+			fauxmo.addDevice(ReleName[ReleIndex]);
+		}	
+		fauxmo.onSetState([](unsigned char device_id, const char * device_name, bool state, unsigned char value) 
+		{
+			uint8_t ReleIndex = 0;
+			for(ReleIndex = 0; ReleIndex < RELE_MAX; ReleIndex++)
+			{
+				if((strcmp(device_name, ReleName[ReleIndex]) == 0))
+					break;
+			}
+			if(state)
+			{
+				TurnOnRele(ReleIndex);
+			}
+			else
+			{
+				TurnOffRele(ReleIndex);
+			}
+		});
+	}
+	else
+		fauxmo.enable(false);
+}
+
+
 
 
 void WifiConfInit()
@@ -168,6 +220,10 @@ void WifiInit()
 			WPSConnection();
 		else
 			WifiWiredConnections();
+	}
+	if(Flag.WifiActive)
+	{
+		AlexaActive(true);
 	}
 	return;
 }
@@ -307,6 +363,7 @@ bool WPSConnection()
 				delay(DELAY_INFO_MSG);
 				AssignSsid();
 			}
+			AlexaActive(true);
 			ClearLCD();
 			Flag.WpsConfigSelected = true;
 		}
@@ -423,6 +480,7 @@ void WifiWiredConnections()
 				delay(DELAY_INFO_MSG);
 				ClearLCD();
 				Flag.WifiReconnect = false;
+				AlexaActive(true);
 				break; //Uscita for
 			}
 		}
@@ -476,6 +534,7 @@ void WifiWiredConnections()
 				LCDPrintString(FOUR, LEFT_ALIGN, "Segnale:");
 				LCDPrintString(FOUR, RIGHT_ALIGN, GetWifiSignalPower());
 				Flag.WifiReconnect = false;
+				AlexaActive(true);
 				delay(DELAY_INFO_MSG);
 				ClearLCD();
 			}
@@ -663,6 +722,7 @@ void WifiDisconnect()
 	WiFi.disconnect();
 	server.close();
 	Flag.WifiActive = false;
+	AlexaActive(false);
 	delay(DELAY_INFO_MSG);
 	ClearLCD();
 }
@@ -673,7 +733,9 @@ void WifiTurnOff()
 	server.close();
 	WiFi.mode(WIFI_OFF);
 	Flag.WifiActive = false;
+	AlexaActive(false);
 	LCDShowPopUp("Wifi Spento");
+	
 }
 
 void WebClient()

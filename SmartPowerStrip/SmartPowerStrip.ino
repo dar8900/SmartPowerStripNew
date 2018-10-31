@@ -12,13 +12,14 @@
 #include "I2CNano.h"
 #include "Reset.h"
 #include "Measure.h"
-
+#include "fauxmoESP.h"
 
 #undef FIRST_GO
 
 extern RELE Rele[];
 extern WiFiClient client;
 extern ESP8266WebServer server;
+extern fauxmoESP fauxmo;
 
 uint8_t WifiConnectionOn[]
 {
@@ -119,6 +120,10 @@ void CheckEvents()
 	WebClient();
 	if(Flag.WifiActive && !Flag.WpsConfigSelected)
 		WifiScanForSignal();
+	if(Flag.WifiActive)
+	{
+		fauxmo.handle();
+	}
 }
 
 

@@ -5,6 +5,15 @@
 #define NO_SAVE		false
 #define SAVE		true
 
+#define RELE_1_STR	"Presa 1"
+#define RELE_2_STR	"Presa 2"
+#define RELE_3_STR	"Presa 3"
+#define RELE_4_STR	"Presa 4"
+#define RELE_5_STR	"Presa 5"
+#define RELE_6_STR	"Presa 6"
+#define RELE_7_STR	"Presa 7"
+#define RELE_8_STR	"Presa 8"
+
 typedef enum
 {
 	RELE_1 = 0,
